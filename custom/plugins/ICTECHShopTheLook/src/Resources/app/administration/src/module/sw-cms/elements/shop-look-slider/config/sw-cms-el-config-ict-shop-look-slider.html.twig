@@ -1,0 +1,130 @@
+<div class="sw-cms-el-config-ict-shop-look-slider">
+    <sw-tabs
+        position-identifier="sw-cms-element-config-ict-shop-look-slider"
+        default-item="content"
+    >
+        <template #default="{ active }">
+            <sw-tabs-item
+                :title="$t('sw-cms.elements.general.config.tab.content')"
+                name="content"
+                :active-tab="active"
+            >
+                {{ $t('sw-cms.elements.general.config.tab.content') }}
+            </sw-tabs-item>
+            <sw-tabs-item
+                :title="$t('sw-cms.elements.general.config.tab.settings')"
+                name="settings"
+                :active-tab="active"
+            >
+                {{ $t('sw-cms.elements.general.config.tab.settings') }}
+            </sw-tabs-item>
+        </template>
+
+        <template #content="{ active }">
+            <div v-show="active === 'content'">
+                <sw-upload-listener
+                    :upload-tag="uploadTag"
+                    auto-upload
+                    @media-upload-finish="onImageUpload"
+                />
+
+                <sw-media-list-selection-v2
+                    :entity-media-items="mediaItems"
+                    :entity="entity"
+                    :upload-tag="uploadTag"
+                    :default-folder-name="defaultFolderName"
+                    @upload-finish="onImageUpload"
+                    @item-remove="onItemRemove"
+                    @open-sidebar="onOpenMediaModal"
+                    @item-sort="onItemSort"
+                />
+            </div>
+
+            <div v-show="active === 'settings'">
+                <mt-select
+                    v-model="element.config.navigationArrows.value"
+                    :label="$t('sw-cms.elements.imageSlider.config.label.navigationArrows')"
+                    help-text="Choose where the previous/next arrows appear: inside the slider, outside, or hidden."
+                    :options="navigationArrowsValueOptions"
+                    @update:model-value="emitUpdateEl"
+                />
+
+                <mt-select
+                    v-model="element.config.navigationDots.value"
+                    :label="$t('sw-cms.elements.imageSlider.config.label.navigationDots')"
+                    help-text="Choose where the dot indicators appear: inside the slider, outside, or hidden."
+                    :options="navigationDotsValueOptions"
+                    @update:model-value="emitUpdateEl"
+                />
+
+                <mt-number-field
+                    v-model="element.config.speed.value"
+                    :label="$t('sw-cms.elements.general.config.label.speed')"
+                    help-text="Transition speed between slides in milliseconds (e.g. 300 = 0.3 seconds)."
+                    number-type="int"
+                    :min="0"
+                    :max="3600000"
+                />
+
+                <mt-switch
+                    v-model="element.config.autoSlide.value"
+                    :label="$t('sw-cms.elements.general.config.label.autoSlide')"
+                    help-text="When enabled, the slider advances automatically without user interaction."
+                    bordered
+                    @update:model-value="onChangeAutoSlide"
+                />
+
+                <mt-number-field
+                    v-model="element.config.autoplayTimeout.value"
+                    :label="$t('sw-cms.elements.general.config.label.autoplayTimeout')"
+                    help-text="Time in milliseconds each slide is shown before advancing automatically (requires Auto Slide to be enabled)."
+                    number-type="int"
+                    :min="0"
+                    :max="3600000"
+                />
+
+                <div
+                    v-for="(sliderItem, index) in items"
+                    :key="index"
+                    style="margin-top:20px;padding:15px;border:1px solid #ddd;"
+                >
+                    <img
+                        v-if="sliderItem.mediaUrl"
+                        :src="sliderItem.mediaUrl"
+                        style="width:60px;height:60px;object-fit:cover;margin-bottom:10px;"
+                    >
+
+                    <mt-select
+                        :value="sliderItem.url"
+                        :label="$t('sw-cms.elements.image.config.label.linkTo')"
+                        :options="seoUrlOptions"
+                        :placeholder="seoUrlOptions.length ? 'Select a page URL...' : 'Loading URLs...'"
+                        @update:model-value="onUrlChange(index, $event)"
+                    />
+
+                    <div v-if="sliderItem.url" style="margin-top:4px;padding:4px 8px;background:#f5f5f5;border-radius:3px;word-break:break-all;">
+                        <small style="color:#555;">{{ sliderItem.url }}</small>
+                    </div>
+
+                    <mt-switch
+                        v-model="sliderItem.newTab"
+                        :label="$t('sw-cms.elements.image.config.label.linkNewTab')"
+                        help-text="When enabled, the link opens in a new browser tab."
+                        bordered
+                    />
+                </div>
+            </div>
+        </template>
+    </sw-tabs>
+
+    <sw-media-modal-v2
+        v-if="mediaModalIsOpen"
+        variant="full"
+        :caption="$t('sw-cms.elements.general.config.caption.mediaUpload')"
+        :entity-context="cmsPageState.entityName"
+        :initial-folder-id="cmsPageState.defaultMediaFolderId"
+        @media-upload-remove-image="onItemRemove"
+        @media-modal-selection-change="onMediaSelectionChange"
+        @modal-close="onCloseMediaModal"
+    />
+</div>

@@ -1,0 +1,59 @@
+{% block element_ict_shop_look_slider %}
+
+{% set sliderConfig = {
+    navigationArrows: element.config.navigationArrows.value,
+    navigationDots: element.config.navigationDots.value,
+    speed: element.config.speed.value,
+    autoSlide: element.config.autoSlide.value,
+    autoplayTimeout: element.config.autoplayTimeout.value
+} %}
+
+{% set sliderItems = element.data.sliderItems ?? [] %}
+
+
+<div class="ict-shop-look-slider" data-shop-look-slider-options='{{ sliderConfig|json_encode }}'>
+    <div class="ict-slider-container">
+        {% if sliderItems is not empty %}
+            {% for item in sliderItems %}
+                {% if item.media and item.media.url %}
+                    <div class="ict-slide">
+                        {% if item.url %}
+                            <a href="{{ item.url }}" {% if item.newTab %}target="_blank" rel="noopener"{% endif %}>
+                                <img src="{{ item.media.url }}" alt="">
+                            </a>
+                        {% else %}
+                            <span class="ict-slide-no-link" title="No link configured for this slide">
+                                <img src="{{ item.media.url }}" alt="">
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for i in 1..6 %}
+                <div class="ict-slide">
+                    <img src="{{ asset('bundles/administration/administration/static/img/cms/preview_mountain_large.webp') }}" alt="">
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% if sliderConfig.navigationArrows != 'none' %}
+        <button class="ict-slider-prev" aria-label="Previous slide">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
+            </svg>
+        </button>
+        <button class="ict-slider-next" aria-label="Next slide">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+            </svg>
+        </button>
+    {% endif %}
+
+    {% if sliderConfig.navigationDots != 'none' %}
+        <div class="ict-slider-dots"></div>
+    {% endif %}
+</div>
+
+{% endblock %}

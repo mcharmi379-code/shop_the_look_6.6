@@ -1,0 +1,26 @@
+.sw-cms-el-preview-ict-shop-the-look {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 15px;
+
+    img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+    }
+
+    .preview-products {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .preview-product {
+        width: 40px;
+        height: 20px;
+        background: #e0e0e0;
+        border-radius: 2px;
+    }
+    
+}

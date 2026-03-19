@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- CMS Element Resolver -->
+        <service id="ICTECHShopTheLook\Core\Content\Cms\ShopTheLookCmsElementResolver">
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\System\Currency\CurrencyFormatter"/>
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+        
+        <!-- Slider CMS Element Resolver -->
+        <service id="ICTECHShopTheLook\Core\Content\Cms\SalesChannel\IctShopLookSliderCmsElementResolver">
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+        
+        <!-- Product Detail Page Subscriber -->
+        <service id="ICTECHShopTheLook\Subscriber\ProductDetailPageSubscriber">
+            <argument type="service" id="cms_slot.repository"/>
+            <argument type="service" id="product.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
+
+    </services>
+</container>

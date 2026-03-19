@@ -1,0 +1,231 @@
+<div class="sw-cms-el-config-ict-shop-the-look">
+
+    <sw-tabs default-item="content">
+
+        <template #default="{ active }">
+            <sw-tabs-item name="content" :active-tab="active">Content</sw-tabs-item>
+            <sw-tabs-item name="settings" :active-tab="active">Settings</sw-tabs-item>
+        </template>
+
+        <template #content="{ active }">
+
+            <div v-show="active === 'content'">
+
+                <mt-select
+                    v-model="element.config.imageDimension.value"
+                    :label="$tc('ict-shop-the-look.config.label.imageDimension')"
+                    help-text="Choose a preset size for the look image, or select &quot;Custom&quot; to enter exact pixel dimensions."
+                    :options="imageDimensionOptions"
+                    @update:model-value="$emit('element-update', element)"
+                />
+
+                <div v-if="element.config.imageDimension.value === 'custom'" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <mt-number-field
+                        v-model="element.config.customWidth.value"
+                        :label="$tc('ict-shop-the-look.config.label.customWidth')"
+                        help-text="Enter the desired width of the look image in pixels (50–2000)."
+                        :min="50"
+                        :max="2000"
+                        @update:model-value="$emit('element-update', element)"
+                    />
+                    <mt-number-field
+                        v-model="element.config.customHeight.value"
+                        :label="$tc('ict-shop-the-look.config.label.customHeight')"
+                        help-text="Enter the desired height of the look image in pixels (50–2000)."
+                        :min="50"
+                        :max="2000"
+                        @update:model-value="$emit('element-update', element)"
+                    />
+                </div>
+
+                <sw-upload-listener
+                    :upload-tag="uploadTag"
+                    auto-upload
+                    @media-upload-finish="onMediaUpload"
+                />
+
+                <sw-media-upload-v2
+                    :label="$tc('ict-shop-the-look.config.label.lookImage')"
+                    help-text="Upload the main fashion/look image that hotspot dots will be placed on."
+                    :source="element.config.lookImage.value"
+                    :upload-tag="uploadTag"
+                    :default-folder="defaultFolderName"
+                    @media-upload-sidebar-open="onMediaUploadOpen"
+                    @media-upload-remove-image="onRemoveImage"
+                />
+
+                <div class="hotspot-section" style="margin-top: 30px;">
+                    <div
+                        v-if="showError && hasProductError"
+                        style="background:#fde8e8;border:1px solid #e53935;border-radius:4px;padding:10px 14px;margin-bottom:16px;color:#b71c1c;font-size:13px;font-weight:500;"
+                    >
+                        &#x2715; {{ $tc('ict-shop-the-look.config.validation.missingProduct') }}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>{{ $tc('ict-shop-the-look.config.hotspot.heading') }}</h3>
+                        <sw-button
+                            variant="primary"
+                            size="small"
+                            @click="addHotspot"
+                        >
+                            {{ $tc('ict-shop-the-look.config.hotspot.addButton') }}
+                        </sw-button>
+                    </div>
+
+                    <div v-if="hotspots.length > 0" class="hotspot-list">
+                        <div
+                            v-for="(hotspot, index) in hotspots"
+                            :key="hotspot.id"
+                            class="hotspot-item"
+                            style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px;"
+                        >
+                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
+                                <h4>{{ $tc('ict-shop-the-look.config.hotspot.title', { index: index + 1 }) }}</h4>
+                                <sw-button
+                                    variant="danger"
+                                    size="small"
+                                    @click="removeHotspot(index)"
+                                >
+                                    {{ $tc('ict-shop-the-look.config.hotspot.removeButton') }}
+                                </sw-button>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 15px; align-items: start;">
+
+                                <div>
+                                    <mt-number-field
+                                        v-model="hotspot.xPosition"
+                                        :label="$tc('ict-shop-the-look.config.label.xPosition')"
+                                        help-text="Horizontal position of the dot: 0% = left edge, 100% = right edge."
+                                        :min="0"
+                                        :max="100"
+                                        @update:model-value="onHotspotChange(index)"
+                                    />
+                                    <mt-number-field
+                                        v-model="hotspot.yPosition"
+                                        :label="$tc('ict-shop-the-look.config.label.yPosition')"
+                                        help-text="Vertical position of the dot: 0% = top edge, 100% = bottom edge."
+                                        :min="0"
+                                        :max="100"
+                                        @update:model-value="onHotspotChange(index)"
+                                        style="margin-top: 10px;"
+                                    />
+                                </div>
+
+                                <div>
+                                    <sw-entity-single-select
+                                        v-model:value="hotspot.productId"
+                                        :label="$tc('ict-shop-the-look.config.label.selectProduct')"
+                                        help-text="Choose the product that this hotspot dot represents."
+                                        entity="product"
+                                        :criteria="productCriteria"
+                                        :context="productContext"
+                                        show-clearable-button
+                                        @update:value="onHotspotProductChange(index)"
+                                    />
+                                </div>
+
+                                <div v-if="element.config.lookImage.value" class="image-preview">
+                                    <div style="position: relative; display: inline-block; max-width: 200px;">
+                                        <img
+                                            :src="element.config.lookImage.value.url"
+                                            style="width: 100%; height: auto; border: 1px solid #ccc;"
+                                            alt="Look Preview"
+                                        />
+                                        <div
+                                            v-for="(previewHotspot, previewIndex) in hotspots"
+                                            :key="previewHotspot.id"
+                                            :style="{
+                                                position: 'absolute',
+                                                left: previewHotspot.xPosition + '%',
+                                                top: previewHotspot.yPosition + '%',
+                                                width: '12px',
+                                                height: '12px',
+                                                background: previewIndex === index ? '#ff0000' : '#007bff',
+                                                borderRadius: '50%',
+                                                transform: 'translate(-50%, -50%)',
+                                                border: '2px solid white',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                                                zIndex: 10
+                                            }"
+                                            :title="`Hotspot ${previewIndex + 1}`"
+                                        ></div>
+                                    </div>
+                                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                                        {{ $tc('ict-shop-the-look.config.hotspot.previewHint') }}
+                                    </p>
+                                </div>
+
+                                <div v-else class="no-image-preview">
+                                    <p style="color: #999; font-style: italic;">{{ $tc('ict-shop-the-look.config.hotspot.noImagePreview') }}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else class="no-hotspots">
+                        <p style="color: #999; text-align: center; padding: 20px;">
+                            {{ $tc('ict-shop-the-look.config.hotspot.noHotspots') }}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div v-show="active === 'settings'">
+
+
+                <mt-select
+                    v-model="element.config.layoutStyle.value"
+                    :label="$tc('ict-shop-the-look.config.label.layoutStyle')"
+                    help-text="Controls how the image and product list are arranged on the storefront."
+                    :options="layoutOptions"
+                    @update:model-value="$emit('element-update', element)"
+                />
+
+                <mt-switch
+                    v-model="element.config.showPrices.value"
+                    :label="$tc('ict-shop-the-look.config.label.showPrices')"
+                    help-text="When enabled, the product price is displayed next to each product."
+                    bordered
+                    @update:model-value="$emit('element-update', element)"
+                />
+
+                <mt-switch
+                    v-model="element.config.showVariantSwitch.value"
+                    :label="$tc('ict-shop-the-look.config.label.showVariantSwitch')"
+                    help-text="When enabled, variant selectors (size, colour, etc.) are shown for each product."
+                    bordered
+                    @update:model-value="$emit('element-update', element)"
+                />
+
+                <mt-switch
+                    v-model="element.config.addAllToCart.value"
+                    :label="$tc('ict-shop-the-look.config.label.addAllToCart')"
+                    help-text="Shows an &quot;Add All to Cart&quot; button that adds every listed product at once."
+                    bordered
+                    @update:model-value="$emit('element-update', element)"
+                />
+
+                <mt-switch
+                    v-model="element.config.addSingleProduct.value"
+                    :label="$tc('ict-shop-the-look.config.label.addSingleProduct')"
+                    help-text="Shows an individual &quot;Add to Cart&quot; button on each product card."
+                    bordered
+                    @update:model-value="$emit('element-update', element)"
+                />
+
+            </div>
+
+        </template>
+
+    </sw-tabs>
+
+    <sw-media-modal-v2
+        v-if="mediaModalOpen"
+        @modal-close="onMediaModalClose"
+        @media-modal-selection-change="onMediaSelect"
+    />
+
+</div>

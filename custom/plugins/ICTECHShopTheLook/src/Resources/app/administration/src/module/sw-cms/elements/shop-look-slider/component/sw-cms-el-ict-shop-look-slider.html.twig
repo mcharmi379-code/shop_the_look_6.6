@@ -1,0 +1,43 @@
+<div class="sw-cms-el-ict-shop-look-slider">
+
+    <div class="slider-row" style="display:flex; align-items:center; gap:10px;">
+
+        <mt-icon
+            name="regular-chevron-left"
+            size="20"
+            @click="prevSlide"
+        />
+
+        <div class="slider-images" style="display:flex; gap:10px; overflow:hidden;">
+
+            <div
+                v-for="(sliderItem, index) in visibleItems"
+                :key="index"
+                style="width:80px;"
+            >
+
+                <img
+                    v-if="sliderItem && sliderItem.mediaUrl"
+                    :src="sliderItem.mediaUrl"
+                    style="width:100%; height:auto;"
+                />
+
+                <img
+                    v-else
+                    :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
+                    style="width:100%; height:auto;"
+                />
+
+            </div>
+
+        </div>
+
+        <mt-icon
+            name="regular-chevron-right"
+            size="20"
+            @click="nextSlide"
+        />
+
+    </div>
+
+</div>

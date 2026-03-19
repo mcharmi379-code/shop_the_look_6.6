@@ -1,0 +1,56 @@
+<div class="sw-cms-el-ict-shop-the-look">
+    <div class="look-layout" :class="'layout--' + layoutStyle">
+
+        <!-- Image -->
+        <div v-if="showImage" class="look-image-wrap">
+            <img
+                v-if="lookImageUrl"
+                :src="lookImageUrl"
+                class="look-image"
+                alt="Look Image"
+            />
+            <img
+                v-else
+                :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_large.webp')"
+                class="look-image"
+                alt="Look Image"
+            />
+            <div
+                v-for="hotspot in hotspots"
+                :key="hotspot.id"
+                class="look-hotspot-dot"
+                :style="{ left: hotspot.xPosition + '%', top: hotspot.yPosition + '%' }"
+            ></div>
+        </div>
+
+        <!-- Products -->
+        <div v-if="showProducts" class="look-products-wrap">
+            <div v-if="hotspots.length > 0" class="look-product-list">
+                <div
+                    v-for="(hotspot, index) in hotspots"
+                    :key="hotspot.id"
+                    class="look-product-item"
+                >
+                    <div class="look-product-thumb">
+                        <img v-if="hotspot.productCoverUrl" :src="hotspot.productCoverUrl" alt="" />
+                    </div>
+                    <div class="look-product-info">
+                        <div class="look-product-name">
+                            {{ hotspot.productName || (hotspot.productId ? 'Loading...' : 'No product selected') }}
+                        </div>
+                        <div class="look-product-price">—</div>
+                    </div>
+                    <div v-if="addSingleProduct" class="look-btn-single">Add to Cart</div>
+                </div>
+            </div>
+            <div v-else class="look-products-empty">
+                <p>Add hotspots &amp; products in the config panel</p>
+            </div>
+
+            <div v-if="addAllToCart && hotspots.length >= 1" class="look-btn-all">
+                Add All to Cart
+            </div>
+        </div>
+
+    </div>
+</div>

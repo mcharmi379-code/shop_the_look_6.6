@@ -1,0 +1,390 @@
+{% block element_ict_shop_the_look %}
+    {% set config = element.data %}
+
+    {% set lookImage = config.lookImage %}
+    {% set hotspots = config.hotspots %}
+    {% set layoutStyle = config.layoutStyle ?? 'image-products' %}
+    {% set showImage    = layoutStyle in ['image-products', 'products-image', 'only-image'] %}
+    {% set showProducts = layoutStyle in ['image-products', 'products-image', 'only-products'] %}
+    <div class="cms-element-ict-shop-the-look">
+        <div class="shop-the-look-container layout--{{ layoutStyle }}">
+            
+            <!-- Left Side - Main Image with Hotspots -->
+            {% if showImage %}
+            <div class="shop-the-look-image-section">
+                {% if not (lookImage and lookImage.url) %}
+                    <div class="shop-the-look-main-image" style="position: relative;">
+                        <img
+                            src="{{ asset('bundles/administration/administration/static/img/cms/preview_mountain_large.webp') }}"
+                            alt="Shop The Look"
+                            class="main-look-image"
+                        />
+                    </div>
+                {% else %}
+                    {% if config.imageWidth and config.imageHeight %}
+                        {% set imgW = config.imageWidth %}
+                        {% set imgH = config.imageHeight %}
+                    {% elseif config.imageDimension and config.imageDimension != 'custom' %}
+                        {% set dimensions = config.imageDimension|split('x') %}
+                        {% set imgW = dimensions[0] %}
+                        {% set imgH = dimensions[1] %}
+                    {% elseif config.customWidth and config.customHeight %}
+                        {% set imgW = config.customWidth %}
+                        {% set imgH = config.customHeight %}
+                    {% else %}
+                        {% set imgW = null %}
+                        {% set imgH = null %}
+                    {% endif %}
+                    <div class="shop-the-look-main-image" style="position: relative;">
+                        <img 
+                            src="{{ lookImage.url }}" 
+                            alt="Shop The Look"
+                            class="main-look-image"
+                           
+                        />
+                        
+                        {% if hotspots %}
+                            {% for hotspot in hotspots %}
+                                <div 
+                                    class="shop-the-look-hotspot"
+                                    data-product-id="{{ hotspot.product.id }}"
+                                    data-hotspot-index="{{ loop.index0 }}"
+                                    style="
+                                        position: absolute;
+                                        left: {{ hotspot.xPosition }}%;
+                                        top: {{ hotspot.yPosition }}%;
+                                        width: 16px;
+                                        height: 16px;
+                                        background: #007bff;
+                                        border: 2px solid white;
+                                        border-radius: 50%;
+                                        transform: translate(-50%, -50%);
+                                        cursor: pointer;
+                                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                                        z-index: 10;
+                                    "
+                                >
+                                    
+                                    <!-- Hotspot Popup -->
+                                    <div class="hotspot-popup" style="display: none;">
+                                        <div class="popup-content">
+                                            <div class="popup-image">
+                                                {% if hotspot.product.cover %}
+                                                    <img src="{{ hotspot.product.cover.media.url }}" alt="{{ hotspot.product.translated.name }}" />
+                                                {% endif %}
+                                            </div>
+                                            <div class="popup-details">
+                                                <a href="{{ seoUrl('frontend.detail.page', {'productId': hotspot.product.id}) }}" class="popup-product-link">
+                                                    <h4 class="popup-product-name">{{ hotspot.product.translated.name }}</h4>
+                                                </a>
+                                                {% if hotspot.formattedPrice %}
+                                                    <div class="popup-price">{{ hotspot.formattedPrice }}</div>
+                                                {% endif %}
+                                                <a href="{{ seoUrl('frontend.detail.page', {'productId': hotspot.product.id}) }}" class="popup-view-button">
+                                                    {{ 'shop-the-look.associatedProducts.viewProduct'|trans }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="popup-arrow"></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if showProducts %}
+            <div class="{% if layoutStyle == 'only-products' %}shop-the-look-only-products-section{% else %}shop-the-look-products-section{% endif %}">
+                {% if hotspots %}
+                    <div class="products-list">
+                        {% for hotspot in hotspots %}
+                            <div class="product-item" data-product-id="{{ hotspot.product.id }}">
+                                
+                                <!-- Product Header with Checkbox -->
+                                <div class="product-header">
+                                    <div class="product-checkbox">
+                                        <input 
+                                            type="checkbox" 
+                                            id="product-{{ hotspot.product.id }}" 
+                                            class="product-select-checkbox"
+                                            data-product-id="{{ hotspot.product.id }}"
+                                            checked
+                                        />
+                                        <label for="product-{{ hotspot.product.id }}"></label>
+                                    </div>
+                                    
+                                    <div class="product-basic-info">
+                                        <div class="product-image">
+                                            {% if hotspot.product.cover %}
+                                                <img 
+                                                    src="{{ hotspot.product.cover.media.url }}" 
+                                                    alt="{{ hotspot.product.translated.name }}"
+                                                />
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="product-details">
+                                          <a href="{{ seoUrl('frontend.detail.page', {'productId': hotspot.product.id}) }}" class="popup-product-link">
+                                            <h4 class="product-name">{{ hotspot.product.translated.name }}</h4> </a>
+                                            
+                                            {% if config.showPrices and hotspot.formattedPrice %}
+                                                <div class="product-price">
+                                                    {{ hotspot.formattedPrice }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Product Variants Section -->
+                                {% if config.showVariantSwitch %}
+                                    <div class="product-variants">
+                                     
+                                        
+                                        <!-- Show all available variants from allVariants data -->
+                                        {% if hotspot.allVariants %}
+                                            {% for groupName, options in hotspot.allVariants %}
+                                                <div class="variant-group">
+                                                    <label class="variant-label">{{ groupName|upper }}</label>
+                                                    <div class="variant-options">
+                                                        {% for optionId, option in options %}
+                                                            <div class="variant-option">
+                                                                <input 
+                                                                    type="radio" 
+                                                                    name="{{ groupName|lower }}-{{ hotspot.product.id }}" 
+                                                                    id="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}"
+                                                                    value="{{ option.id }}"
+                                                                    class="variant-radio"
+                                                                    data-group="{{ groupName|lower }}"
+                                                                    data-product-id="{{ hotspot.product.id }}"
+                                                                    data-option-id="{{ option.id }}"
+                                                                    data-option-name="{{ option.name }}"
+                                                                    {% if loop.first %}checked{% endif %}
+                                                                />
+                                                                <label for="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}" class="variant-label-option">
+                                                                    {% if groupName|lower == 'color' or groupName|lower == 'colour' %}
+                                                                        <span class="color-swatch" style="background-color: {{ option.colorHexCode ?? '#ccc' }};"></span>
+                                                                    {% endif %}
+                                                                    {{ option.name }}
+                                                                </label>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <!-- Fallback: Show current product options -->
+                                            {% if hotspot.product.options %}
+                                                {% set optionGroups = {} %}
+                                                {% for option in hotspot.product.options %}
+                                                    {% set groupName = option.group.translated.name %}
+                                                    {% if optionGroups[groupName] is not defined %}
+                                                        {% set optionGroups = optionGroups|merge({(groupName): []}) %}
+                                                    {% endif %}
+                                                    {% set optionGroups = optionGroups|merge({(groupName): optionGroups[groupName]|merge([option])}) %}
+                                                {% endfor %}
+                                                
+                                                {% for groupName, options in optionGroups %}
+                                                    <div class="variant-group">
+                                                        <label class="variant-label">{{ groupName|upper }}</label>
+                                                        <div class="variant-options">
+                                                            {% for option in options %}
+                                                                <div class="variant-option">
+                                                                    <input 
+                                                                        type="radio" 
+                                                                        name="{{ groupName|lower }}-{{ hotspot.product.id }}" 
+                                                                        id="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}"
+                                                                        value="{{ option.id }}"
+                                                                        class="variant-radio"
+                                                                        data-group="{{ groupName|lower }}"
+                                                                        data-product-id="{{ hotspot.product.id }}"
+                                                                        data-option-id="{{ option.id }}"
+                                                                        {% if loop.first %}checked{% endif %}
+                                                                    />
+                                                                    <label for="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}" class="variant-label-option">
+                                                                        {% if groupName|lower == 'color' or groupName|lower == 'colour' %}
+                                                                            <span class="color-swatch" style="background-color: {{ option.colorHexCode ?? '#ccc' }};"></span>
+                                                                        {% endif %}
+                                                                        {{ option.translated.name }}
+                                                                    </label>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                            
+                                            <!-- Show properties as fallback for products without variants -->
+                                            {% if hotspot.product.properties %}
+                                                {% set propertyGroups = {} %}
+                                                {% for property in hotspot.product.properties %}
+                                                    {% set groupName = property.group.translated.name %}
+                                                    {% if propertyGroups[groupName] is not defined %}
+                                                        {% set propertyGroups = propertyGroups|merge({(groupName): []}) %}
+                                                    {% endif %}
+                                                    {% set propertyGroups = propertyGroups|merge({(groupName): propertyGroups[groupName]|merge([property])}) %}
+                                                {% endfor %}
+                                                
+                                                {% for groupName, properties in propertyGroups %}
+                                                    <!-- Check if this group is not already shown in options -->
+                                                    {% set groupInOptions = false %}
+                                                    {% if hotspot.product.options %}
+                                                        {% for option in hotspot.product.options %}
+                                                            {% if option.group.translated.name == groupName %}
+                                                                {% set groupInOptions = true %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    
+                                                    {% if not groupInOptions %}
+                                                        <div class="variant-group">
+                                                            <label class="variant-label">{{ groupName|upper }}</label>
+                                                            <div class="variant-options">
+                                                                {% for property in properties %}
+                                                                    <div class="variant-option">
+                                                                        <input 
+                                                                            type="radio" 
+                                                                            name="property-{{ groupName|lower }}-{{ hotspot.product.id }}" 
+                                                                            id="property-{{ property.id }}-{{ hotspot.product.id }}"
+                                                                            value="{{ property.id }}"
+                                                                            class="variant-radio"
+                                                                            data-group="{{ groupName|lower }}"
+                                                                            data-product-id="{{ hotspot.product.id }}"
+                                                                            data-option-id="{{ property.id }}"
+                                                                            {% if loop.first %}checked{% endif %}
+                                                                        />
+                                                                        <label for="property-{{ property.id }}-{{ hotspot.product.id }}" class="variant-label-option">
+                                                                            {% if groupName|lower == 'color' or groupName|lower == 'colour' %}
+                                                                                <span class="color-swatch" style="background-color: {{ property.colorHexCode ?? '#ccc' }};"></span>
+                                                                            {% endif %}
+                                                                            {{ property.translated.name }}
+                                                                        </label>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endif %}
+                                        
+                                    </div>
+                                {% endif %}
+                                
+
+
+                                
+                                <!-- Store variant mapping data for JavaScript (always needed for add-all) -->
+                                {% if hotspot.variantMappingData and hotspot.variantMappingData|length > 0 %}
+                                    <script type="application/json" class="variant-data" data-product-id="{{ hotspot.product.id }}">
+                                    {
+                                        "parentId": "{{ hotspot.parentProduct.id }}",
+                                        "variants": [
+                                            {% for variant in hotspot.variantMappingData %}
+                                            {
+                                                "id": "{{ variant.id }}",
+                                                "name": "{{ variant.name }}",
+                                                "inStock": {{ variant.inStock ? 'true' : 'false' }},
+                                                "options": [
+                                                    {% for optionId in variant.options %}
+                                                        "{{ optionId }}"{% if not loop.last %},{% endif %}
+                                                    {% endfor %}
+                                                ]
+                                            }{% if not loop.last %},{% endif %}
+                                            {% endfor %}
+                                        ]
+                                    }
+                                    </script>
+                                {% endif %}
+
+                                <!-- Individual Add to Cart -->
+                                {% if config.addSingleProduct %}
+                                    <div class="individual-add-to-cart">
+                                        <form action="{{ path('frontend.checkout.line-item.add') }}" method="post" class="add-to-cart-form" data-add-to-cart="true">
+                                            
+                                            <!-- For products with variants, we need to add the specific variant ID, not the parent -->
+                                            {% set productToAdd = hotspot.product %}
+                                            {% if hotspot.product.childCount > 0 and hotspot.product.children and hotspot.product.children|length > 0 %}
+                                                {% set productToAdd = hotspot.product.children.first %}
+                                            {% endif %}
+                                            
+                                            <input type="hidden" name="lineItems[{{ productToAdd.id }}][id]" value="{{ productToAdd.id }}">
+                                            <input type="hidden" name="lineItems[{{ productToAdd.id }}][type]" value="product">
+                                            <input type="hidden" name="lineItems[{{ productToAdd.id }}][referencedId]" value="{{ productToAdd.id }}">
+                                            <input type="hidden" name="lineItems[{{ productToAdd.id }}][quantity]" value="1">
+                                            <input type="hidden" name="lineItems[{{ productToAdd.id }}][stackable]" value="1">
+                                            <input type="hidden" name="lineItems[{{ productToAdd.id }}][removable]" value="1">
+                                            
+                                            <!-- Add current product options as default -->
+                                            {% if productToAdd.options %}
+                                                {% for option in productToAdd.options %}
+                                                    <input type="hidden" name="lineItems[{{ productToAdd.id }}][payload][options][{{ option.id }}]" value="{{ option.id }}" class="default-option">
+                                                {% endfor %}
+                                            {% endif %}
+                                            
+                                            <!-- Redirect parameters to stay on same page -->
+                                            <input type="hidden" name="redirectTo" value="frontend.cms.page">
+                                            <input type="hidden" name="redirectParameters" value='{{ {"id": page.cmsPage.id}|json_encode }}'>
+                                            
+                                            <button type="submit" class="btn btn-outline-primary add-single-to-cart" data-product-id="{{ hotspot.product.id }}">
+                                                {{ 'shop-the-look.associatedProducts.addToCart'|trans }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                                
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Add All to Cart Button -->
+                    {% if config.addAllToCart and hotspots|length >= 1 %}
+                        <div class="add-all-section">
+                            <form action="{{ path('frontend.checkout.line-item.add') }}" method="post" class="add-all-form" data-add-to-cart="true">
+                                {% set productQuantities = {} %}
+                                {% for hotspot in hotspots %}
+                                    {% set pid = hotspot.product.id %}
+                                    {% set qty = productQuantities[pid] is defined ? productQuantities[pid] + 1 : 1 %}
+                                    {% set productQuantities = productQuantities|merge({(pid): qty}) %}
+                                {% endfor %}
+                                {% set renderedIds = [] %}
+                                {% for hotspot in hotspots %}
+                                    {% set pid = hotspot.product.id %}
+                                    {% if pid not in renderedIds %}
+                                        {% set renderedIds = renderedIds|merge([pid]) %}
+                                        <input type="hidden" name="lineItems[{{ pid }}][id]" value="{{ pid }}" class="product-line-item" data-product-id="{{ pid }}">
+                                        <input type="hidden" name="lineItems[{{ pid }}][type]" value="product" class="product-line-item" data-product-id="{{ pid }}">
+                                        <input type="hidden" name="lineItems[{{ pid }}][referencedId]" value="{{ pid }}" class="product-line-item" data-product-id="{{ pid }}">
+                                        <input type="hidden" name="lineItems[{{ pid }}][quantity]" value="{{ productQuantities[pid] }}" class="product-line-item" data-product-id="{{ pid }}">
+                                        <input type="hidden" name="lineItems[{{ pid }}][stackable]" value="1" class="product-line-item" data-product-id="{{ pid }}">
+                                        <input type="hidden" name="lineItems[{{ pid }}][removable]" value="1" class="product-line-item" data-product-id="{{ pid }}">
+                                        {% if hotspot.product.options %}
+                                            {% for option in hotspot.product.options %}
+                                                <input type="hidden" name="lineItems[{{ pid }}][payload][options][{{ option.id }}]" value="{{ option.id }}" class="product-line-item default-option" data-product-id="{{ pid }}">
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                               
+                                <input type="hidden" name="redirectTo" value="frontend.cms.page">
+                                <input type="hidden" name="redirectParameters" value='{{ {"id": page.cmsPage.id}|json_encode }}'>
+                                
+                                <button type="submit" class="btn btn-primary btn-lg add-all-to-cart"
+                                        data-label-select="{{ 'shop-the-look.associatedProducts.selectProducts'|trans }}"
+                                        data-label-add="{{ 'shop-the-look.associatedProducts.addNToCart'|trans }}"
+                                        data-label-out-of-stock="{{ 'shop-the-look.associatedProducts.outOfStock'|trans }}"
+                                        onclick="rebuildAddAllForm(this)">
+                                    {{ 'shop-the-look.associatedProducts.addAllToCart'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+            
+        </div>
+    </div>
+{% endblock %}

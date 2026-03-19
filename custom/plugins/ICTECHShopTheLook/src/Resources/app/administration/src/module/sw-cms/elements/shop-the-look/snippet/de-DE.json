@@ -1,0 +1,47 @@
+{
+    "ict-shop-the-look": {
+        "label": "Shop The Look",
+        "block": {
+            "label": "Shop The Look Block"
+        },
+        "config": {
+            "tab": {
+                "content": "Inhalt",
+                "settings": "Einstellungen"
+            },
+            "label": {
+                "imageDimension": "Bildgröße",
+                "customWidth": "Breite (px)",
+                "customHeight": "Höhe (px)",
+                "lookImage": "Look-Bild",
+                "productListWidth": "Produktlistenbreite",
+                "layoutStyle": "Layout-Stil",
+                "showPrices": "Preise anzeigen",
+                "showVariantSwitch": "Variantenauswahl anzeigen",
+                "addAllToCart": "Alle Produkte in den Warenkorb",
+                "addSingleProduct": "Einzelnes Produkt in den Warenkorb",
+                "xPosition": "X-Position (%)",
+                "yPosition": "Y-Position (%)",
+                "selectProduct": "Produkt auswählen"
+            },
+            "hotspot": {
+                "heading": "Produkt-Hotspots",
+                "addButton": "Hotspot hinzufügen",
+                "removeButton": "Entfernen",
+                "title": "Hotspot {index}",
+                "noHotspots": "Noch keine Hotspots vorhanden. Klicken Sie auf \"Hotspot hinzufügen\".",
+                "noImagePreview": "Bild hochladen, um Vorschau zu sehen",
+                "previewHint": "Roter Punkt = Aktueller Hotspot | Blaue Punkte = Andere Hotspots"
+            },
+            "validation": {
+                "missingProduct": "Bitte fügen Sie mindestens einen Hotspot mit einem ausgewählten Produkt hinzu."
+            },
+            "layoutOption": {
+                "imageProducts": "Bild → Produkte",
+                "productsImage": "Produkte → Bild",
+                "onlyImage": "Nur Bild",
+                "onlyProducts": "Nur Produkte"
+            }
+        }
+    }
+}

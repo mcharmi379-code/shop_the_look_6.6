@@ -1,0 +1,47 @@
+{
+    "ict-shop-the-look": {
+        "label": "Shop The Look",
+        "block": {
+            "label": "Shop The Look Block"
+        },
+        "config": {
+            "tab": {
+                "content": "Content",
+                "settings": "Settings"
+            },
+            "label": {
+                "imageDimension": "Image Dimension",
+                "customWidth": "Width (px)",
+                "customHeight": "Height (px)",
+                "lookImage": "Look Image",
+                "productListWidth": "Product List Width",
+                "layoutStyle": "Layout Style",
+                "showPrices": "Show Prices",
+                "showVariantSwitch": "Show Variant Switch",
+                "addAllToCart": "Add All Products to Cart Button",
+                "addSingleProduct": "Add Single Product to Cart Button",
+                "xPosition": "X Position (%)",
+                "yPosition": "Y Position (%)",
+                "selectProduct": "Select Product"
+            },
+            "hotspot": {
+                "heading": "Product Hotspots",
+                "addButton": "Add Hotspot",
+                "removeButton": "Remove",
+                "title": "Hotspot {index}",
+                "noHotspots": "No hotspots added yet. Click \"Add Hotspot\" to get started.",
+                "noImagePreview": "Upload an image to see preview",
+                "previewHint": "Red dot = Current hotspot | Blue dots = Other hotspots"
+            },
+            "validation": {
+                "missingProduct": "Please add at least one hotspot with a product selected before saving."
+            },
+            "layoutOption": {
+                "imageProducts": "Image → Products",
+                "productsImage": "Products → Image",
+                "onlyImage": "Only Image",
+                "onlyProducts": "Only Products"
+            }
+        }
+    }
+}

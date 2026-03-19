@@ -1,0 +1,13 @@
+
+{% block component_cms_block_ict_shop_the_look_block %}
+<div class="cms-block cms-block-ict-shop-the-look-block">
+
+    {% for slot in block.slots %}
+        {% sw_include '@Storefront/storefront/element/cms-element-' ~ slot.type ~ '.html.twig' with {
+            element: slot
+        } %}
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+.sw-cms-preview-ict-shop-look-slider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px;
+    height: 100%;
+
+    img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 2px;
+    }
+
+    mt-icon {
+        color: #52667a;
+    }
+   
+}

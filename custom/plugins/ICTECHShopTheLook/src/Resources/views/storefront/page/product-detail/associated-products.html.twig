@@ -1,0 +1,175 @@
+{% set shopTheLookData = page.getExtension('shopTheLookData') %}
+
+
+{% if shopTheLookData and shopTheLookData.relatedLooks and shopTheLookData.relatedLooks|length > 0 %}
+<div class="shop-the-look-associated-products">
+    <h3 class="mb-3">{{ 'shop-the-look.associatedProducts.title'|trans }}</h3>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">{{ 'shop-the-look.associatedProducts.image'|trans }}</th>
+                    <th scope="col">{{ 'shop-the-look.associatedProducts.product'|trans }}</th>
+                    <th scope="col">{{ 'shop-the-look.associatedProducts.variants'|trans }}</th>
+                    <th scope="col">{{ 'shop-the-look.associatedProducts.price'|trans }}</th>
+                    <th scope="col">{{ 'shop-the-look.associatedProducts.action'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in shopTheLookData.relatedLooks %}
+                        <tr class="product-row" data-product-id="{{ product.id }}">
+                            <td>
+                                {% if product.cover and product.cover.media %}
+                                    <img src="{{ product.cover.media.url }}" 
+                                         alt="{{ product.name }}" 
+                                         class="img-fluid rounded"
+                                         style="max-width: 60px; max-height: 60px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                         style="width: 60px; height: 60px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="product-info">
+                                    <strong class="d-block">{{ product.name }}</strong>
+                                    <small class="text-muted">{{ product.productNumber }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                {% if product.variants and product.variants|length > 0 %}
+                                    <select class="form-control form-select variant-selector" 
+                                            data-product-id="{{ product.id }}"
+                                            onchange="updateSelectedVariant('{{ product.id }}', this.value)">
+                                        <option value="">{{ 'shop-the-look.associatedProducts.selectVariant'|trans }}</option>
+                                        {% for variant in product.variants %}
+                                            <option value="{{ variant.id }}" 
+                                                    data-price="{{ variant.price.first.gross }}"
+                                                    data-formatted-price="{{ variant.price.first.gross|currency }}"
+                                                    data-stock="{{ variant.stock }}"
+                                                    {% if loop.first %}selected{% endif %}>
+                                                {% for option in variant.options %}
+                                                    {{ option.option }}{% if not loop.last %}, {% endif %}
+                                                {% endfor %}
+                                                ({{ variant.price.first.gross|currency }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                {% else %}
+                                    <span class="text-muted">{{ 'shop-the-look.associatedProducts.noVariants'|trans }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="price-display fw-bold text-success" 
+                                      id="price-{{ product.id }}"
+                                      data-base-price="{{ product.price.first.gross }}">
+                                    {{ product.price.first.gross|currency }}
+                                </span>
+                            </td>
+                            <td>
+                                <form action="{{ path('frontend.checkout.line-item.add') }}" method="post" class="add-to-cart-form" data-add-to-cart="true" data-product-id="{{ product.id }}">
+                                    {% if product.variants and product.variants|length > 0 %}
+                                        {% set firstVariant = product.variants[0] %}
+                                        <input type="hidden" name="lineItems[{{ firstVariant.id }}][id]" value="{{ firstVariant.id }}" id="variant-id-{{ product.id }}">
+                                        <input type="hidden" name="lineItems[{{ firstVariant.id }}][type]" value="product">
+                                        <input type="hidden" name="lineItems[{{ firstVariant.id }}][referencedId]" value="{{ firstVariant.id }}">
+                                        <input type="hidden" name="lineItems[{{ firstVariant.id }}][quantity]" value="1">
+                                        <input type="hidden" name="lineItems[{{ firstVariant.id }}][stackable]" value="1">
+                                        <input type="hidden" name="lineItems[{{ firstVariant.id }}][removable]" value="1">
+                                        <input type="hidden" name="redirectTo" value="frontend.detail.page">
+                                        <input type="hidden" name="redirectParameters" value='{{ {"productId": page.product.id}|json_encode }}'>
+                                        <button type="submit" class="btn btn-primary btn-sm add-to-cart-btn" 
+                                                id="add-to-cart-{{ product.id }}">
+                                            {{ 'shop-the-look.associatedProducts.addToCart'|trans }}
+                                        </button>
+                                    {% else %}
+                                        <input type="hidden" name="lineItems[{{ product.id }}][id]" value="{{ product.id }}">
+                                        <input type="hidden" name="lineItems[{{ product.id }}][type]" value="product">
+                                        <input type="hidden" name="lineItems[{{ product.id }}][referencedId]" value="{{ product.id }}">
+                                        <input type="hidden" name="lineItems[{{ product.id }}][quantity]" value="1">
+                                        <input type="hidden" name="lineItems[{{ product.id }}][stackable]" value="1">
+                                        <input type="hidden" name="lineItems[{{ product.id }}][removable]" value="1">
+                                        <input type="hidden" name="redirectTo" value="frontend.detail.page">
+                                        <input type="hidden" name="redirectParameters" value='{{ {"productId": page.product.id}|json_encode }}'>
+                                        <button type="submit" class="btn btn-primary btn-sm add-to-cart-btn">
+                                            {{ 'shop-the-look.associatedProducts.addToCart'|trans }}
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.shop-the-look-associated-products {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+}
+
+.product-info {
+    line-height: 1.4;
+}
+
+.variant-selector {
+    min-width: 200px;
+}
+
+.add-to-cart-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+</style>
+
+<script>
+function updateSelectedVariant(productId, variantId) {
+    const form = document.querySelector(`form[data-product-id="${productId}"]`);
+    if (!form) return;
+    
+    // Remove all existing lineItems inputs
+    form.querySelectorAll('input[name*="lineItems["]').forEach(input => input.remove());
+    
+    // Create new inputs with the selected variant ID
+    const inputs = [
+        { name: `lineItems[${variantId}][id]`, value: variantId },
+        { name: `lineItems[${variantId}][type]`, value: 'product' },
+        { name: `lineItems[${variantId}][referencedId]`, value: variantId },
+        { name: `lineItems[${variantId}][quantity]`, value: '1' },
+        { name: `lineItems[${variantId}][stackable]`, value: '1' },
+        { name: `lineItems[${variantId}][removable]`, value: '1' }
+    ];
+    
+    inputs.forEach(inputData => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = inputData.name;
+        input.value = inputData.value;
+        form.appendChild(input);
+    });
+    
+    // Update price display
+    const priceDisplay = document.getElementById('price-' + productId);
+    if (variantId && priceDisplay) {
+        const select = document.querySelector(`[data-product-id="${productId}"]`);
+        const selectedOption = select.querySelector(`option[value="${variantId}"]`);
+        if (selectedOption) {
+            const formattedPrice = selectedOption.dataset.formattedPrice;
+            priceDisplay.textContent = formattedPrice ?? '';
+        }
+    }
+}
+</script>
+{% endif %}
