@@ -1,0 +1,45 @@
+{% block element_ict_shop_the_look_hotspot %}
+<div
+    class="shop-the-look-hotspot"
+    data-product-id="{{ hotspot.product.id }}"
+    data-hotspot-index="{{ loop.index0 }}"
+    style="
+        position: absolute;
+        left: {{ hotspot.xPosition }}%;
+        top: {{ hotspot.yPosition }}%;
+        width: 16px;
+        height: 16px;
+        background: #007bff;
+        border: 2px solid white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        z-index: 10;
+    "
+>
+    {% block element_ict_shop_the_look_hotspot_popup %}
+    <div class="hotspot-popup" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-image">
+                {% if hotspot.product.cover %}
+                    <img src="{{ hotspot.product.cover.media.url }}" alt="{{ hotspot.product.translated.name }}" />
+                {% endif %}
+            </div>
+            <div class="popup-details">
+                <a href="{{ seoUrl('frontend.detail.page', {'productId': hotspot.product.id}) }}" class="popup-product-link">
+                    <h4 class="popup-product-name">{{ hotspot.product.translated.name }}</h4>
+                </a>
+                {% if hotspot.formattedPrice %}
+                    <div class="popup-price">{{ hotspot.formattedPrice }}</div>
+                {% endif %}
+                <a href="{{ seoUrl('frontend.detail.page', {'productId': hotspot.product.id}) }}" class="popup-view-button">
+                    {{ 'shop-the-look.associatedProducts.viewProduct'|trans }}
+                </a>
+            </div>
+        </div>
+        <div class="popup-arrow"></div>
+    </div>
+    {% endblock %}
+</div>
+{% endblock %}

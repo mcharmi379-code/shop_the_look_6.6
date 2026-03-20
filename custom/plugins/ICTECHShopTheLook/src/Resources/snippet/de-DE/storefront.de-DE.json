@@ -1,0 +1,17 @@
+{
+    "shop-the-look.associatedProducts.title": "Den Look vervollständigen",
+    "shop-the-look.associatedProducts.image": "Bild",
+    "shop-the-look.associatedProducts.product": "Produkt",
+    "shop-the-look.associatedProducts.variants": "Varianten",
+    "shop-the-look.associatedProducts.price": "Preis",
+    "shop-the-look.associatedProducts.action": "Aktion",
+    "shop-the-look.associatedProducts.selectVariant": "Variante wählen",
+    "shop-the-look.associatedProducts.noVariants": "Keine Varianten",
+    "shop-the-look.associatedProducts.addToCart": "In den Warenkorb",
+    "shop-the-look.associatedProducts.addAllToCart": "Alle in den Warenkorb",
+    "shop-the-look.associatedProducts.viewProduct": "Produkt ansehen",
+    "shop-the-look.associatedProducts.selectProducts": "Produkte auswählen",
+    "shop-the-look.associatedProducts.addNToCart": "%count% in den Warenkorb",
+    "shop-the-look.associatedProducts.outOfStock": "Gewählte Größe ist nicht vorrätig",
+    "shop-the-look.associatedProducts.selectVariantsAlert": "Bitte wählen Sie Varianten für Produkte, die Varianten haben."
+}

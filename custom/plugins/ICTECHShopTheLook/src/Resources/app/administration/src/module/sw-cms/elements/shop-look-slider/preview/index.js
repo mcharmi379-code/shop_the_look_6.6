@@ -4,9 +4,5 @@ import './sw-cms-el-preview-ict-shop-look-slider.scss';
 
 Shopware.Component.register('sw-cms-el-preview-ict-shop-look-slider', {
     template,
-      computed: {
-        assetFilter() {
-            return Shopware.Filter.getByName('asset');
-        },
-    },
+    mixins: [Shopware.Mixin.getByName('ict-asset-filter')],
 });

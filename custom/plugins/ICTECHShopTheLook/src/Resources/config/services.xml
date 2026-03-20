@@ -7,11 +7,16 @@
         <service id="ICTECHShopTheLook\Core\Content\Cms\ShopTheLookCmsElementResolver">
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Shopware\Core\System\Currency\CurrencyFormatter"/>
+            <argument type="service" id="ICTECHShopTheLook\Service\ProductVariantOptionsResolver"/>
+            <argument type="service" id="ICTECHShopTheLook\Service\VariantMappingBuilder"/>
             <tag name="shopware.cms.data_resolver"/>
         </service>
+
+        <service id="ICTECHShopTheLook\Service\ProductVariantOptionsResolver"/>
+        <service id="ICTECHShopTheLook\Service\VariantMappingBuilder"/>
         
         <!-- Slider CMS Element Resolver -->
-        <service id="ICTECHShopTheLook\Core\Content\Cms\SalesChannel\IctShopLookSliderCmsElementResolver">
+        <service id="ICTECHShopTheLook\Core\Content\Cms\SalesChannel\ShopLookSliderCmsElementResolver">
             <tag name="shopware.cms.data_resolver"/>
         </service>
         

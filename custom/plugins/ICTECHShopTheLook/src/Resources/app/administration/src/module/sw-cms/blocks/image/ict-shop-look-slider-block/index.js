@@ -15,6 +15,8 @@ Shopware.Service('cmsService').registerCmsBlock({
         sizingMode: 'boxed'
     },
     slots: {
-        content: 'ict-shop-look-slider'
+        content: {
+            type: 'ict-shop-look-slider'
+        }
     }
 });

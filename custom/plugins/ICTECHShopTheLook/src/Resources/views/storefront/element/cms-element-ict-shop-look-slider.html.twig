@@ -10,12 +10,14 @@
 
 {% set sliderItems = element.data.sliderItems ?? [] %}
 
-
 <div class="ict-shop-look-slider" data-shop-look-slider-options='{{ sliderConfig|json_encode }}'>
+
+    {% block element_ict_shop_look_slider_container %}
     <div class="ict-slider-container">
         {% if sliderItems is not empty %}
             {% for item in sliderItems %}
                 {% if item.media and item.media.url %}
+                    {% block element_ict_shop_look_slider_item %}
                     <div class="ict-slide">
                         {% if item.url %}
                             <a href="{{ item.url }}" {% if item.newTab %}target="_blank" rel="noopener"{% endif %}>
@@ -27,6 +29,7 @@
                             </span>
                         {% endif %}
                     </div>
+                    {% endblock %}
                 {% endif %}
             {% endfor %}
         {% else %}
@@ -37,7 +40,9 @@
             {% endfor %}
         {% endif %}
     </div>
+    {% endblock %}
 
+    {% block element_ict_shop_look_slider_navigation %}
     {% if sliderConfig.navigationArrows != 'none' %}
         <button class="ict-slider-prev" aria-label="Previous slide">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -50,10 +55,14 @@
             </svg>
         </button>
     {% endif %}
+    {% endblock %}
 
+    {% block element_ict_shop_look_slider_dots %}
     {% if sliderConfig.navigationDots != 'none' %}
         <div class="ict-slider-dots"></div>
     {% endif %}
+    {% endblock %}
+
 </div>
 
 {% endblock %}

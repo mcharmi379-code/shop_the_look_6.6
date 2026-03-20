@@ -417,3 +417,30 @@
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+.shop-the-look-associated-products {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+
+    .product-info {
+        line-height: 1.4;
+    }
+
+    .variant-selector {
+        min-width: 200px;
+    }
+
+    .add-to-cart-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+    }
+}

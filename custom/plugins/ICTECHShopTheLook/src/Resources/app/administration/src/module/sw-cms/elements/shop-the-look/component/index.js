@@ -21,11 +21,9 @@ Component.register('sw-cms-el-ict-shop-the-look', {
         layoutStyle() {
             return this.element?.config?.layoutStyle?.value || 'image-products';
         },
-        // Controls whether the look image section is rendered in the preview
         showImage() {
             return ['image-products', 'products-image', 'only-image'].includes(this.layoutStyle);
         },
-        // Controls whether the product list section is rendered in the preview
         showProducts() {
             return ['image-products', 'products-image', 'only-products'].includes(this.layoutStyle);
         },
@@ -37,10 +35,9 @@ Component.register('sw-cms-el-ict-shop-the-look', {
         },
         assetFilter() {
             return Shopware.Filter.getByName('asset');
-        }
+        },
     },
     created() {
-        // Merges defaultConfig values into element.config for any missing keys
         this.initElementConfig('ict-shop-the-look');
-    }
+    },
 });

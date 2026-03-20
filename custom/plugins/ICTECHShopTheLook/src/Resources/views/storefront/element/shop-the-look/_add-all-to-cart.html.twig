@@ -1,0 +1,36 @@
+{% block element_ict_shop_the_look_add_all_to_cart %}
+{% if config.addAllToCart and hotspots|length >= 1 %}
+    <div class="add-all-section">
+        <form action="{{ path('frontend.checkout.line-item.add') }}" method="post" class="add-all-form" data-add-to-cart="true">
+            {% set productQuantities = {} %}
+            {% for hotspot in hotspots %}
+                {% set pid = hotspot.product.id %}
+                {% set qty = productQuantities[pid] is defined ? productQuantities[pid] + 1 : 1 %}
+                {% set productQuantities = productQuantities|merge({(pid): qty}) %}
+            {% endfor %}
+            {% set renderedIds = [] %}
+            {% for hotspot in hotspots %}
+                {% set pid = hotspot.product.id %}
+                {% if pid not in renderedIds %}
+                    {% set renderedIds = renderedIds|merge([pid]) %}
+                    {% sw_include '@ICTECHShopTheLook/storefront/component/_line-item-inputs.html.twig' with { itemId: pid, quantity: productQuantities[pid], extraClass: 'product-line-item', dataProductId: pid } %}
+                    {% if hotspot.product.options %}
+                        {% for option in hotspot.product.options %}
+                            <input type="hidden" name="lineItems[{{ pid }}][payload][options][{{ option.id }}]" value="{{ option.id }}" class="product-line-item default-option" data-product-id="{{ pid }}">
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            <input type="hidden" name="redirectTo" value="frontend.cms.page">
+            <input type="hidden" name="redirectParameters" value='{{ {"id": page.cmsPage.id}|json_encode }}'>
+            <button type="submit" class="btn btn-primary btn-lg add-all-to-cart"
+                    data-label-select="{{ 'shop-the-look.associatedProducts.selectProducts'|trans }}"
+                    data-label-add="{{ 'shop-the-look.associatedProducts.addNToCart'|trans }}"
+                    data-label-out-of-stock="{{ 'shop-the-look.associatedProducts.outOfStock'|trans }}"
+                    data-add-all-to-cart="true">
+                {{ 'shop-the-look.associatedProducts.addAllToCart'|trans }}
+            </button>
+        </form>
+    </div>
+{% endif %}
+{% endblock %}

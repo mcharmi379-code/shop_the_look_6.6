@@ -1,4 +1,5 @@
 
+import './mixin/ict-asset-filter.mixin'
 import './module/sw-cms/blocks/image/ict-shop-look-slider-block'
 import './module/sw-cms/blocks/image/ict-shop-the-look-block'
 import './module/sw-cms/elements/shop-look-slider'

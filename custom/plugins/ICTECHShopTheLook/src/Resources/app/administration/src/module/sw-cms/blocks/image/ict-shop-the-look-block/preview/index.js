@@ -3,9 +3,5 @@ import './sw-cms-preview-ict-shop-the-look-block.scss';
 
 Shopware.Component.register('sw-cms-preview-ict-shop-the-look-block', {
     template,
-    computed: {
-        assetFilter() {
-            return Shopware.Filter.getByName('asset');
-        }
-    }
+    mixins: [Shopware.Mixin.getByName('ict-asset-filter')],
 });

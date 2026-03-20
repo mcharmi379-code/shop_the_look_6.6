@@ -3,25 +3,41 @@
     "description": "i-c-t-e-c-h-shop-the-look/i-c-t-e-c-h-shop-the-look",
     "type": "shopware-platform-plugin",
     "version": "1.0.0",
-    "license": "MIT",
+    "license": "proprietary",
+      "authors": [
+        {
+            "name": "iCreative Technologies"
+        }
+    ],
     "require": {
-        "shopware/core": "~6.6.0"
+        "shopware/core": "~6.7.0",
+        "shopware/storefront": "~6.7.0"
     },
     "extra": {
         "shopware-plugin-class": "ICTECHShopTheLook\\ICTECHShopTheLook",
         "label": {
             "de-DE": "Shop The Look",
             "en-GB": "Shop The Look"
+        },
+        "description": {
+            "de-DE": "Ermöglicht das Einbinden von Produkt-Hotspots auf Look-Bildern im CMS, mit Variantenauswahl und In-den-Warenkorb-Funktion.",
+            "en-GB": "Enables product hotspots on look images in the CMS, with variant selection and add-to-cart functionality."
+        },
+          "plugin-icon": "src/Resources/config/shopthelook.png",
+        "copyright": "(c) iCreateive Technologies. All Rights Reserved.",
+        "manufacturerLink": {
+            "de-DE": "https://www.icreativetechnologies.com/",
+            "en-GB": "https://www.icreativetechnologies.com/"
+        },
+        "supportLink": {
+            "de-DE": "https://support.icreativetechnologies.com/",
+            "en-GB": "https://support.icreativetechnologies.com/"
         }
     },
+    
     "autoload": {
         "psr-4": {
             "ICTECHShopTheLook\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "ICTECHShopTheLook\\Tests\\": "tests/"
         }
     }
 }

@@ -3,16 +3,6 @@ import template from './sw-cms-el-config-ict-shop-the-look.html.twig';
 const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
-/**
- * Configuration panel component for the 'ict-shop-the-look' CMS element.
- * Allows editors to:
- * - Upload or select a look image
- * - Add/remove hotspots and assign a product to each
- * - Configure layout style, image dimensions, and cart behaviour
- *
- * Exposes a validate() method consumed by the sw-cms-slot override
- * to block saving when required products are missing.
- */
 Component.register('sw-cms-el-config-ict-shop-the-look', {
     template,
 
@@ -69,7 +59,6 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         productCriteria() {
-            // Only show root (non-variant) products in the product search
             const criteria = new Criteria(1, 25);
             criteria.addAssociation('cover');
             criteria.addFilter(Criteria.equals('parentId', null));
@@ -107,12 +96,10 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         requiresProducts() {
-            // These layout modes must have at least one hotspot with a product
             return ['image-products', 'products-image', 'only-products'].includes(this.layoutStyle);
         },
 
         hasProductError() {
-            // Validation flag: true when a product-requiring layout has no hotspots or an unassigned hotspot
             if (!this.requiresProducts) return false;
             return this.hotspots.length === 0 || this.hotspots.some(h => !h.productId);
         },
@@ -124,8 +111,6 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
     },
 
     methods: {
-        // Called by sw-cms-slot override before closing the modal.
-        // Returns false to block close and show an inline error when products are missing.
         validate() {
             if (this.hasProductError) {
                 this.showError = true;
@@ -143,9 +128,7 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         cleanupDimensionConfig() {
-            // Reset custom width/height when a preset dimension is selected
-            const imageDimension = this.element.config.imageDimension?.value;
-            if (imageDimension !== 'custom') {
+            if (this.element.config.imageDimension?.value !== 'custom') {
                 if (this.element.config.customWidth) this.element.config.customWidth.value = null;
                 if (this.element.config.customHeight) this.element.config.customHeight.value = null;
             }
@@ -171,25 +154,24 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         async onHotspotProductChange(index) {
-            // Eagerly fetch the product name and cover image so the config UI
-            // can display them without waiting for a full page reload
             const hotspot = this.hotspots[index];
-            if (hotspot.productId) {
-                const criteria = new Criteria(1, 1);
-                criteria.addAssociation('cover.media');
-                const product = await this.productRepository.get(hotspot.productId, Shopware.Context.api, criteria);
-                if (product) {
-                    hotspot.productName = product.translated?.name || product.name || '';
-                    hotspot.productCoverUrl = product.cover?.media?.url || null;
-                }
-            } else {
+            if (!hotspot.productId) {
                 hotspot.productName = null;
                 hotspot.productCoverUrl = null;
+                this.saveHotspots();
+                return;
+            }
+            const criteria = new Criteria(1, 1);
+            criteria.addAssociation('cover.media');
+            const product = await this.productRepository.get(hotspot.productId, Shopware.Context.api, criteria);
+            if (product) {
+                hotspot.productName = product.translated?.name || product.name || '';
+                hotspot.productCoverUrl = product.cover?.media?.url || null;
             }
             this.saveHotspots();
         },
 
-        onHotspotChange(index) {
+        onHotspotChange() {
             this.saveHotspots();
         },
 
@@ -199,7 +181,6 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         generateId() {
-            // Combines timestamp + random suffix to guarantee uniqueness within a session
             return 'hotspot_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         },
 
@@ -214,7 +195,6 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         async setMediaItem({ targetId }) {
-            // Resolve the uploaded media entity by ID and store it in the element config
             const media = await this.mediaRepository.get(targetId);
             this.element.config.lookImage.value = media;
             this.onElementUpdate();

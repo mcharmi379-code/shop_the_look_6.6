@@ -1,0 +1,8 @@
+{% block component_line_item_inputs %}
+<input type="hidden" name="lineItems[{{ itemId }}][id]" value="{{ itemId }}" {% if extraClass %}class="{{ extraClass }}"{% endif %} {% if dataProductId %}data-product-id="{{ dataProductId }}"{% endif %}>
+<input type="hidden" name="lineItems[{{ itemId }}][type]" value="product" {% if extraClass %}class="{{ extraClass }}"{% endif %} {% if dataProductId %}data-product-id="{{ dataProductId }}"{% endif %}>
+<input type="hidden" name="lineItems[{{ itemId }}][referencedId]" value="{{ itemId }}" {% if extraClass %}class="{{ extraClass }}"{% endif %} {% if dataProductId %}data-product-id="{{ dataProductId }}"{% endif %}>
+<input type="hidden" name="lineItems[{{ itemId }}][quantity]" value="{{ quantity ?? 1 }}" {% if extraClass %}class="{{ extraClass }}"{% endif %} {% if dataProductId %}data-product-id="{{ dataProductId }}"{% endif %}>
+<input type="hidden" name="lineItems[{{ itemId }}][stackable]" value="1" {% if extraClass %}class="{{ extraClass }}"{% endif %} {% if dataProductId %}data-product-id="{{ dataProductId }}"{% endif %}>
+<input type="hidden" name="lineItems[{{ itemId }}][removable]" value="1" {% if extraClass %}class="{{ extraClass }}"{% endif %} {% if dataProductId %}data-product-id="{{ dataProductId }}"{% endif %}>
+{% endblock %}

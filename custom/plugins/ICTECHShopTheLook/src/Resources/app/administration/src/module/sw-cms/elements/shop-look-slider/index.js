@@ -18,11 +18,7 @@ Shopware.Service('cmsService').registerCmsElement({
 
         sliderItems: {
             source: 'static',
-            value: [],
-            required: false,
-            entity: {
-                name: 'media'
-            }
+            value: []
         },
 
         navigationArrows: {
@@ -52,4 +48,4 @@ Shopware.Service('cmsService').registerCmsElement({
 
     }
 
-}); 
+});

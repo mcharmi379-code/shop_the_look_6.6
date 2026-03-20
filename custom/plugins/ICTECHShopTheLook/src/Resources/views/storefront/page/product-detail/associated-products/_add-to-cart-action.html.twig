@@ -1,0 +1,22 @@
+{% block shop_the_look_associated_products_row_action %}
+<td>
+    <form action="{{ path('frontend.checkout.line-item.add') }}" method="post" class="add-to-cart-form" data-add-to-cart="true" data-product-id="{{ product.id }}">
+        {% if product.variants and product.variants|length > 0 %}
+            {% set firstVariant = product.variants[0] %}
+            {% sw_include '@ICTECHShopTheLook/storefront/component/_line-item-inputs.html.twig' with { itemId: firstVariant.id } %}
+            <input type="hidden" name="redirectTo" value="frontend.detail.page">
+            <input type="hidden" name="redirectParameters" value='{{ {"productId": page.product.id}|json_encode }}'>
+            <button type="submit" class="btn btn-primary btn-sm add-to-cart-btn" id="add-to-cart-{{ product.id }}">
+                {{ 'shop-the-look.associatedProducts.addToCart'|trans }}
+            </button>
+        {% else %}
+            {% sw_include '@ICTECHShopTheLook/storefront/component/_line-item-inputs.html.twig' with { itemId: product.id } %}
+            <input type="hidden" name="redirectTo" value="frontend.detail.page">
+            <input type="hidden" name="redirectParameters" value='{{ {"productId": page.product.id}|json_encode }}'>
+            <button type="submit" class="btn btn-primary btn-sm add-to-cart-btn">
+                {{ 'shop-the-look.associatedProducts.addToCart'|trans }}
+            </button>
+        {% endif %}
+    </form>
+</td>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% block element_ict_shop_the_look_product_variants %}
+{% if config.showVariantSwitch %}
+    <div class="product-variants">
+        {% if hotspot.allVariants %}
+            {% for groupName, options in hotspot.allVariants %}
+                <div class="variant-group">
+                    <label class="variant-label">{{ groupName|upper }}</label>
+                    <div class="variant-options">
+                        {% for optionId, option in options %}
+                            <div class="variant-option">
+                                <input
+                                    type="radio"
+                                    name="{{ groupName|lower }}-{{ hotspot.product.id }}"
+                                    id="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}"
+                                    value="{{ option.id }}"
+                                    class="variant-radio"
+                                    data-group="{{ groupName|lower }}"
+                                    data-product-id="{{ hotspot.product.id }}"
+                                    data-option-id="{{ option.id }}"
+                                    data-option-name="{{ option.name }}"
+                                    {% if loop.first %}checked{% endif %}
+                                />
+                                <label for="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}" class="variant-label-option">
+                                    {% if groupName|lower == 'color' or groupName|lower == 'colour' %}
+                                        <span class="color-swatch" style="background-color: {{ option.colorHexCode ?? '#ccc' }};"></span>
+                                    {% endif %}
+                                    {{ option.name }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            {% if hotspot.product.options %}
+                {% set optionGroups = {} %}
+                {% for option in hotspot.product.options %}
+                    {% set groupName = option.group.translated.name %}
+                    {% if optionGroups[groupName] is not defined %}
+                        {% set optionGroups = optionGroups|merge({(groupName): []}) %}
+                    {% endif %}
+                    {% set optionGroups = optionGroups|merge({(groupName): optionGroups[groupName]|merge([option])}) %}
+                {% endfor %}
+                {% for groupName, options in optionGroups %}
+                    <div class="variant-group">
+                        <label class="variant-label">{{ groupName|upper }}</label>
+                        <div class="variant-options">
+                            {% for option in options %}
+                                <div class="variant-option">
+                                    <input
+                                        type="radio"
+                                        name="{{ groupName|lower }}-{{ hotspot.product.id }}"
+                                        id="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}"
+                                        value="{{ option.id }}"
+                                        class="variant-radio"
+                                        data-group="{{ groupName|lower }}"
+                                        data-product-id="{{ hotspot.product.id }}"
+                                        data-option-id="{{ option.id }}"
+                                        {% if loop.first %}checked{% endif %}
+                                    />
+                                    <label for="{{ groupName|lower }}-{{ option.id }}-{{ hotspot.product.id }}" class="variant-label-option">
+                                        {% if groupName|lower == 'color' or groupName|lower == 'colour' %}
+                                            <span class="color-swatch" style="background-color: {{ option.colorHexCode ?? '#ccc' }};"></span>
+                                        {% endif %}
+                                        {{ option.translated.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if hotspot.product.properties %}
+                {% set propertyGroups = {} %}
+                {% for property in hotspot.product.properties %}
+                    {% set groupName = property.group.translated.name %}
+                    {% if propertyGroups[groupName] is not defined %}
+                        {% set propertyGroups = propertyGroups|merge({(groupName): []}) %}
+                    {% endif %}
+                    {% set propertyGroups = propertyGroups|merge({(groupName): propertyGroups[groupName]|merge([property])}) %}
+                {% endfor %}
+                {% for groupName, properties in propertyGroups %}
+                    {% set groupInOptions = false %}
+                    {% if hotspot.product.options %}
+                        {% for option in hotspot.product.options %}
+                            {% if option.group.translated.name == groupName %}
+                                {% set groupInOptions = true %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if not groupInOptions %}
+                        <div class="variant-group">
+                            <label class="variant-label">{{ groupName|upper }}</label>
+                            <div class="variant-options">
+                                {% for property in properties %}
+                                    <div class="variant-option">
+                                        <input
+                                            type="radio"
+                                            name="property-{{ groupName|lower }}-{{ hotspot.product.id }}"
+                                            id="property-{{ property.id }}-{{ hotspot.product.id }}"
+                                            value="{{ property.id }}"
+                                            class="variant-radio"
+                                            data-group="{{ groupName|lower }}"
+                                            data-product-id="{{ hotspot.product.id }}"
+                                            data-option-id="{{ property.id }}"
+                                            {% if loop.first %}checked{% endif %}
+                                        />
+                                        <label for="property-{{ property.id }}-{{ hotspot.product.id }}" class="variant-label-option">
+                                            {% if groupName|lower == 'color' or groupName|lower == 'colour' %}
+                                                <span class="color-swatch" style="background-color: {{ property.colorHexCode ?? '#ccc' }};"></span>
+                                            {% endif %}
+                                            {{ property.translated.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

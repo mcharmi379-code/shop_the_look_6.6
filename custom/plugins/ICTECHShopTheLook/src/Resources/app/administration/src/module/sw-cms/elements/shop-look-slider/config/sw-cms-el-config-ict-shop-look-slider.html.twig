@@ -1,6 +1,5 @@
 <div class="sw-cms-el-config-ict-shop-look-slider">
     <sw-tabs
-        position-identifier="sw-cms-element-config-ict-shop-look-slider"
         default-item="content"
     >
         <template #default="{ active }">
@@ -21,7 +20,7 @@
         </template>
 
         <template #content="{ active }">
-            <div v-show="active === 'content'">
+            <div v-if="active === 'content'">
                 <sw-upload-listener
                     :upload-tag="uploadTag"
                     auto-upload
@@ -40,7 +39,7 @@
                 />
             </div>
 
-            <div v-show="active === 'settings'">
+            <div v-if="active === 'settings'">
                 <mt-select
                     v-model="element.config.navigationArrows.value"
                     :label="$t('sw-cms.elements.imageSlider.config.label.navigationArrows')"
