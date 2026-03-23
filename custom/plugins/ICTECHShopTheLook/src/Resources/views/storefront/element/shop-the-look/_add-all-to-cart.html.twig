@@ -15,14 +15,16 @@
                     {% set renderedIds = renderedIds|merge([pid]) %}
                     {% sw_include '@ICTECHShopTheLook/storefront/component/_line-item-inputs.html.twig' with { itemId: pid, quantity: productQuantities[pid], extraClass: 'product-line-item', dataProductId: pid } %}
                     {% if hotspot.product.options %}
+                        {% set optionIds = [] %}
                         {% for option in hotspot.product.options %}
-                            <input type="hidden" name="lineItems[{{ pid }}][payload][options][{{ option.id }}]" value="{{ option.id }}" class="product-line-item default-option" data-product-id="{{ pid }}">
+                            {% set optionIds = optionIds|merge([option.id]) %}
                         {% endfor %}
+                        <input type="hidden" name="lineItems[{{ pid }}][payload]" value='{{ {"options": optionIds|reduce((carry, id) => carry|merge({(id): id}), {})}|json_encode }}' class="product-line-item default-option" data-product-id="{{ pid }}">
                     {% endif %}
                 {% endif %}
             {% endfor %}
-            <input type="hidden" name="redirectTo" value="frontend.cms.page">
-            <input type="hidden" name="redirectParameters" value='{{ {"id": page.cmsPage.id}|json_encode }}'>
+            <input type="hidden" name="redirectTo" value="frontend.cart.offcanvas">
+            <input type="hidden" name="redirectParameters" data-redirect-parameters="true" value="{}">
             <button type="submit" class="btn btn-primary btn-lg add-all-to-cart"
                     data-label-select="{{ 'shop-the-look.associatedProducts.selectProducts'|trans }}"
                     data-label-add="{{ 'shop-the-look.associatedProducts.addNToCart'|trans }}"

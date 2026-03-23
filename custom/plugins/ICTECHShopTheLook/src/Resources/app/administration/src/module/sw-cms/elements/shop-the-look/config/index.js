@@ -55,7 +55,8 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         defaultFolderName() {
-            return this.cmsPageState._entityName;
+            const cmsPageState = this.cmsPageState || {};
+            return cmsPageState.entityName || cmsPageState._entityName || cmsPageState.pageEntityName || '';
         },
 
         productCriteria() {
@@ -92,7 +93,10 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         layoutStyle() {
-            return this.element?.config?.layoutStyle?.value || 'image-products';
+            const element = this.element || {};
+            const config = element.config || {};
+            const layoutStyle = config.layoutStyle || {};
+            return layoutStyle.value || 'image-products';
         },
 
         requiresProducts() {
@@ -103,14 +107,37 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
             if (!this.requiresProducts) return false;
             return this.hotspots.length === 0 || this.hotspots.some(h => !h.productId);
         },
+
+        lookImageData() {
+            // config.lookImage.value stores { mediaId, mediaUrl } — persists to DB
+            const val = ((this.element && this.element.config) || {}).lookImage?.value;
+            if (val && typeof val === 'object' && val.mediaUrl) {
+                return val;
+            }
+            return null;
+        },
     },
 
     created() {
         this.initElementConfig('ict-shop-the-look');
+        this.ensureBooleanDefaults();
         this.loadHotspots();
+        this.loadLookImage();
     },
 
     methods: {
+        ensureBooleanDefaults() {
+            const config = (this.element && this.element.config) || {};
+            ['showPrices', 'showVariantSwitch', 'addAllToCart', 'addSingleProduct'].forEach(key => {
+                if (config[key] && config[key].value !== false) {
+                    config[key].value = true;
+                }
+            });
+        },
+        async loadLookImage() {
+            // No async fetch needed — mediaUrl is stored directly in config.lookImage.value
+        },
+
         validate() {
             if (this.hasProductError) {
                 this.showError = true;
@@ -128,14 +155,26 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         cleanupDimensionConfig() {
-            if (this.element.config.imageDimension?.value !== 'custom') {
-                if (this.element.config.customWidth) this.element.config.customWidth.value = null;
-                if (this.element.config.customHeight) this.element.config.customHeight.value = null;
+            const element = this.element || {};
+            const config = element.config || {};
+            const imageDimension = config.imageDimension || {};
+
+            if (imageDimension.value !== 'custom') {
+                if (config.customWidth) {
+                    config.customWidth.value = null;
+                }
+
+                if (config.customHeight) {
+                    config.customHeight.value = null;
+                }
             }
         },
 
         loadHotspots() {
-            this.hotspots = this.element.config.hotspots?.value || [];
+            const element = this.element || {};
+            const config = element.config || {};
+            const hotspots = config.hotspots || {};
+            this.hotspots = hotspots.value || [];
         },
 
         addHotspot() {
@@ -165,8 +204,12 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
             criteria.addAssociation('cover.media');
             const product = await this.productRepository.get(hotspot.productId, Shopware.Context.api, criteria);
             if (product) {
-                hotspot.productName = product.translated?.name || product.name || '';
-                hotspot.productCoverUrl = product.cover?.media?.url || null;
+                const translated = product.translated || {};
+                hotspot.productName = translated.name || product.name || '';
+
+                const cover = product.cover || null;
+                const coverMedia = cover && cover.media ? cover.media : null;
+                hotspot.productCoverUrl = coverMedia && coverMedia.url ? coverMedia.url : null;
             }
             this.saveHotspots();
         },
@@ -185,7 +228,8 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         onMediaSelect(selection) {
-            this.element.config.lookImage.value = selection[0];
+            const item = selection && selection.length ? selection[0] : null;
+            this.element.config.lookImage.value = item ? { mediaId: item.id, mediaUrl: item.url } : null;
             this.mediaModalOpen = false;
             this.onElementUpdate();
         },
@@ -196,7 +240,7 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
 
         async setMediaItem({ targetId }) {
             const media = await this.mediaRepository.get(targetId);
-            this.element.config.lookImage.value = media;
+            this.element.config.lookImage.value = media ? { mediaId: media.id, mediaUrl: media.url } : null;
             this.onElementUpdate();
         },
 

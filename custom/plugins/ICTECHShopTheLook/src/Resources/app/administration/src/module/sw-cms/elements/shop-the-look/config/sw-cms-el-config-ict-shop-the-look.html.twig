@@ -47,7 +47,7 @@
                 <sw-media-upload-v2
                     :label="$tc('ict-shop-the-look.config.label.lookImage')"
                     help-text="Upload the main fashion/look image that hotspot dots will be placed on."
-                    :source="element.config.lookImage.value"
+                    :source="lookImageData ? lookImageData.mediaUrl : null"
                     :upload-tag="uploadTag"
                     :default-folder="defaultFolderName"
                     @media-upload-sidebar-open="onMediaUploadOpen"
@@ -125,10 +125,10 @@
                                     />
                                 </div>
 
-                                <div v-if="element.config.lookImage.value" class="image-preview">
+                                <div v-if="lookImageData" class="image-preview">
                                     <div style="position: relative; display: inline-block; max-width: 200px;">
                                         <img
-                                            :src="element.config.lookImage.value.url"
+                                            :src="lookImageData.mediaUrl"
                                             style="width: 100%; height: auto; border: 1px solid #ccc;"
                                             alt="Look Preview"
                                         />
@@ -185,35 +185,35 @@
                 />
 
                 <mt-switch
-                    v-model="element.config.showPrices.value"
+                    :checked="element.config.showPrices.value"
                     :label="$tc('ict-shop-the-look.config.label.showPrices')"
                     help-text="When enabled, the product price is displayed next to each product."
                     bordered
-                    @update:model-value="$emit('element-update', element)"
+                    @change="element.config.showPrices.value = $event; onElementUpdate()"
                 />
 
                 <mt-switch
-                    v-model="element.config.showVariantSwitch.value"
+                    :checked="element.config.showVariantSwitch.value"
                     :label="$tc('ict-shop-the-look.config.label.showVariantSwitch')"
                     help-text="When enabled, variant selectors (size, colour, etc.) are shown for each product."
                     bordered
-                    @update:model-value="$emit('element-update', element)"
+                    @change="element.config.showVariantSwitch.value = $event; onElementUpdate()"
                 />
 
                 <mt-switch
-                    v-model="element.config.addAllToCart.value"
+                    :checked="element.config.addAllToCart.value"
                     :label="$tc('ict-shop-the-look.config.label.addAllToCart')"
                     help-text="Shows an &quot;Add All to Cart&quot; button that adds every listed product at once."
                     bordered
-                    @update:model-value="$emit('element-update', element)"
+                    @change="element.config.addAllToCart.value = $event; onElementUpdate()"
                 />
 
                 <mt-switch
-                    v-model="element.config.addSingleProduct.value"
+                    :checked="element.config.addSingleProduct.value"
                     :label="$tc('ict-shop-the-look.config.label.addSingleProduct')"
                     help-text="Shows an individual &quot;Add to Cart&quot; button on each product card."
                     bordered
-                    @update:model-value="$emit('element-update', element)"
+                    @change="element.config.addSingleProduct.value = $event; onElementUpdate()"
                 />
 
             </div>

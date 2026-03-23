@@ -5,7 +5,7 @@ Shopware.Service('cmsService').registerCmsBlock({
     name: 'ict-shop-look-slider-block',
     label: 'Shop Look Slider Block',
     category: 'commerce',
-    component: 'sw-cms-block-ict-shop-look-slider',
+    component: 'sw-cms-block-ict-shop-look-slider-block',
     previewComponent: 'sw-cms-preview-ict-shop-look-slider-block',
     defaultConfig: {
         marginBottom: '20px',
@@ -15,8 +15,6 @@ Shopware.Service('cmsService').registerCmsBlock({
         sizingMode: 'boxed'
     },
     slots: {
-        content: {
-            type: 'ict-shop-look-slider'
-        }
+        content: 'ict-shop-look-slider'
     }
 });

@@ -67,12 +67,14 @@
                 {% endif %}
                 {% sw_include '@ICTECHShopTheLook/storefront/component/_line-item-inputs.html.twig' with { itemId: productToAdd.id } %}
                 {% if productToAdd.options %}
+                    {% set optionIds = [] %}
                     {% for option in productToAdd.options %}
-                        <input type="hidden" name="lineItems[{{ productToAdd.id }}][payload][options][{{ option.id }}]" value="{{ option.id }}" class="default-option">
+                        {% set optionIds = optionIds|merge([option.id]) %}
                     {% endfor %}
+                    <input type="hidden" name="lineItems[{{ productToAdd.id }}][payload]" value='{{ {"options": optionIds|reduce((carry, id) => carry|merge({(id): id}), {})}|json_encode }}'>
                 {% endif %}
-                <input type="hidden" name="redirectTo" value="frontend.cms.page">
-                <input type="hidden" name="redirectParameters" value='{{ {"id": page.cmsPage.id}|json_encode }}'>
+                <input type="hidden" name="redirectTo" value="frontend.cart.offcanvas">
+                <input type="hidden" name="redirectParameters" data-redirect-parameters="true" value='{{ {"productId": hotspot.product.id}|json_encode }}'>
                 <button type="submit" class="btn btn-outline-primary add-single-to-cart" data-product-id="{{ hotspot.product.id }}">
                     {{ 'shop-the-look.associatedProducts.addToCart'|trans }}
                 </button>

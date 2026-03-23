@@ -14,7 +14,7 @@
             {% if showImage %}
             <div class="shop-the-look-image-section">
                 {% block element_ict_shop_the_look_main_image %}
-                {% if not (lookImage and lookImage.url) %}
+                {% if not (lookImage and lookImage.mediaUrl) %}
                     <div class="shop-the-look-main-image" style="position: relative;">
                         <img
                             src="{{ asset('bundles/administration/administration/static/img/cms/preview_mountain_large.webp') }}"
@@ -24,7 +24,7 @@
                     </div>
                 {% else %}
                     <div class="shop-the-look-main-image" style="position: relative;">
-                        <img src="{{ lookImage.url }}" alt="Shop The Look" class="main-look-image" />
+                        <img src="{{ lookImage.mediaUrl }}" alt="Shop The Look" class="main-look-image" />
                         {% block element_ict_shop_the_look_hotspots %}
                         {% if hotspots %}
                             {% for hotspot in hotspots %}

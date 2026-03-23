@@ -7,7 +7,6 @@ const Criteria = Shopware.Data.Criteria;
 
 Component.register('sw-cms-el-config-ict-shop-look-slider', {
     template,
-
     inject: ['repositoryFactory'],
 
     emits: ['element-update'],
@@ -44,11 +43,15 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
         },
 
         defaultFolderName() {
-            return this.cmsPageState.pageEntityName;
+            const cmsPageState = this.cmsPageState || {};
+            return cmsPageState.entityName || cmsPageState._entityName || cmsPageState.pageEntityName || '';
         },
 
         items() {
-            return this.element.config?.sliderItems?.value || [];
+            const element = this.element || {};
+            const config = element.config || {};
+            const sliderItems = config.sliderItems || {};
+            return sliderItems.value || [];
         },
 
         speedDefault() {
@@ -123,7 +126,11 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
         },
 
         async getMediaItem(mediaItem) {
-            return mediaItem?.targetId ? this.mediaRepository.get(mediaItem.targetId) : mediaItem;
+            if (mediaItem && mediaItem.targetId) {
+                return this.mediaRepository.get(mediaItem.targetId);
+            }
+
+            return mediaItem;
         },
 
         onItemRemove(mediaItem, index) {
@@ -195,7 +202,7 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
             const domains = await this.salesChannelDomainRepository.search(domainCriteria, Shopware.Context.api);
             const storefrontDomain = domains.find(d => d.url && d.url.startsWith('http') && !d.url.includes('https'))
                 || domains.find(d => d.url && d.url.startsWith('http'));
-            const base = storefrontDomain?.url?.replace(/\/$/, '') || '';
+            const base = storefrontDomain && storefrontDomain.url ? storefrontDomain.url.replace(/\/$/, '') : '';
 
             const criteria = new Criteria(1, 500);
             criteria.addFilter(Criteria.equals('isCanonical', true));

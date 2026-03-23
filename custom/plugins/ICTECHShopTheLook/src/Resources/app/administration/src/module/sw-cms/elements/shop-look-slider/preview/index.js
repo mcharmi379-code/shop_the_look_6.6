@@ -1,4 +1,3 @@
-
 import template from './sw-cms-el-preview-ict-shop-look-slider.html.twig';
 import './sw-cms-el-preview-ict-shop-look-slider.scss';
 

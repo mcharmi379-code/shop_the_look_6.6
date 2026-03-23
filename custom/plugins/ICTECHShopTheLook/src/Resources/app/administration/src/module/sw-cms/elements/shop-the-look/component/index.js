@@ -10,16 +10,31 @@ const { Component, Mixin } = Shopware;
  */
 Component.register('sw-cms-el-ict-shop-the-look', {
     template,
-    mixins: [Mixin.getByName('cms-element')],
+    mixins: [
+        Mixin.getByName('cms-element'),
+        Mixin.getByName('ict-asset-filter'),
+    ],
     computed: {
         lookImageUrl() {
-            return this.element?.config?.lookImage?.value?.url || null;
+            const element = this.element || {};
+            // config.lookImage.value stores { mediaId, mediaUrl } — persists to DB
+            const val = (element.config || {}).lookImage?.value;
+            if (val && typeof val === 'object' && val.mediaUrl) {
+                return val.mediaUrl;
+            }
+            return null;
         },
         hotspots() {
-            return this.element?.config?.hotspots?.value || [];
+            const element = this.element || {};
+            const config = element.config || {};
+            const hotspots = config.hotspots || {};
+            return hotspots.value || [];
         },
         layoutStyle() {
-            return this.element?.config?.layoutStyle?.value || 'image-products';
+            const element = this.element || {};
+            const config = element.config || {};
+            const layoutStyle = config.layoutStyle || {};
+            return layoutStyle.value || 'image-products';
         },
         showImage() {
             return ['image-products', 'products-image', 'only-image'].includes(this.layoutStyle);
@@ -28,10 +43,16 @@ Component.register('sw-cms-el-ict-shop-the-look', {
             return ['image-products', 'products-image', 'only-products'].includes(this.layoutStyle);
         },
         addSingleProduct() {
-            return this.element?.config?.addSingleProduct?.value !== false;
+            const element = this.element || {};
+            const config = element.config || {};
+            const addSingleProduct = config.addSingleProduct || {};
+            return addSingleProduct.value !== false;
         },
         addAllToCart() {
-            return this.element?.config?.addAllToCart?.value !== false;
+            const element = this.element || {};
+            const config = element.config || {};
+            const addAllToCart = config.addAllToCart || {};
+            return addAllToCart.value !== false;
         },
         assetFilter() {
             return Shopware.Filter.getByName('asset');
