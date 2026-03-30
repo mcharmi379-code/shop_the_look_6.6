@@ -1,6 +1,26 @@
 {
     "ict-shop-look-slider": {
         "label": "Shop Look Slider",
+        "config": {
+            "heading": {
+                "label": "Heading",
+                "helpText": "Displayed above the storefront slider."
+            },
+            "navigationCategory": {
+                "label": "Shared category",
+                "helpText": "Optional. When set, every selected Shop page slide opens inside this one category context.",
+                "placeholder": "Select one category for all slides..."
+            },
+            "shopPage": {
+                "label": "Shop page",
+                "helpText": "Optional. Select a Shop page layout for this slide. This avoids creating a separate category per look.",
+                "placeholder": "Select a Shop page..."
+            },
+            "manualLink": {
+                "label": "Manual link target",
+                "helpText": "Fallback only. Use this only when you do not want the slide to open a selected Shop page."
+            }
+        },
         "block": {
             "label": "Shop Look Slider Block"
         }

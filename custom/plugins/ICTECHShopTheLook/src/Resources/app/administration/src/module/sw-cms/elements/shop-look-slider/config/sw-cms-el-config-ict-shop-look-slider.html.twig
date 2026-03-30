@@ -40,6 +40,13 @@
             </div>
 
             <div v-if="active === 'settings'">
+                <mt-text-field
+                    v-model="element.config.heading.value"
+                    :label="$t('ict-shop-look-slider.config.heading.label')"
+                    :help-text="$t('ict-shop-look-slider.config.heading.helpText')"
+                    @update:model-value="emitUpdateEl"
+                />
+
                 <mt-select
                     v-model="element.config.navigationArrows.value"
                     :label="$t('sw-cms.elements.imageSlider.config.label.navigationArrows')"
@@ -93,15 +100,26 @@
                         style="width:60px;height:60px;object-fit:cover;margin-bottom:10px;"
                     >
 
+                    <sw-cms-page-select
+                        :value="sliderItem.cmsPageId"
+                        page-type="page"
+                        :label="$t('ict-shop-look-slider.config.shopPage.label')"
+                        :help-text="$t('ict-shop-look-slider.config.shopPage.helpText')"
+                        :placeholder="$t('ict-shop-look-slider.config.shopPage.placeholder')"
+                        @update:value="onCmsPageChange(index, $event)"
+                    />
+
                     <mt-select
+                        v-if="!sliderItem.cmsPageId"
                         :value="sliderItem.url"
-                        :label="$t('sw-cms.elements.image.config.label.linkTo')"
+                        :label="$t('ict-shop-look-slider.config.manualLink.label')"
+                        :help-text="$t('ict-shop-look-slider.config.manualLink.helpText')"
                         :options="seoUrlOptions"
-                        :placeholder="seoUrlOptions.length ? 'Select a page URL...' : 'Loading URLs...'"
+                        :placeholder="seoUrlOptions.length ? 'Select a storefront path...' : 'Loading paths...'"
                         @update:model-value="onUrlChange(index, $event)"
                     />
 
-                    <div v-if="sliderItem.url" style="margin-top:4px;padding:4px 8px;background:#f5f5f5;border-radius:3px;word-break:break-all;">
+                    <div v-if="!sliderItem.cmsPageId && sliderItem.url" style="margin-top:4px;padding:4px 8px;background:#f5f5f5;border-radius:3px;word-break:break-all;">
                         <small style="color:#555;">{{ sliderItem.url }}</small>
                     </div>
 

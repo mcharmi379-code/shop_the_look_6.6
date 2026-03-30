@@ -79,11 +79,12 @@
                             class="hotspot-item"
                             style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px;"
                         >
-                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
-                                <h4>{{ $tc('ict-shop-the-look.config.hotspot.title', { index: index + 1 }) }}</h4>
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                <h4 style="margin: 0;">{{ $tc('ict-shop-the-look.config.hotspot.title', { index: index + 1 }) }}</h4>
                                 <sw-button
                                     variant="danger"
                                     size="small"
+                                    style="flex-shrink: 0;"
                                     @click="removeHotspot(index)"
                                 >
                                     {{ $tc('ict-shop-the-look.config.hotspot.removeButton') }}

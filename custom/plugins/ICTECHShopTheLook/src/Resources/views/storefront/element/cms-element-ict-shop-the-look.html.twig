@@ -1,11 +1,21 @@
 {% block element_ict_shop_the_look %}
     {% set config = element.data %}
-
     {% set lookImage = config.lookImage %}
     {% set hotspots = config.hotspots %}
     {% set layoutStyle = config.layoutStyle ?? 'image-products' %}
     {% set showImage    = layoutStyle in ['image-products', 'products-image', 'only-image'] %}
     {% set showProducts = layoutStyle in ['image-products', 'products-image', 'only-products'] %}
+    {% set imageDimension = config.imageDimension ?? '300x300' %}
+    {% set imageWidth = config.customWidth ?? 300 %}
+    {% set imageHeight = config.customHeight ?? 300 %}
+    {% if imageDimension == 'custom' %}
+        {% set imageWidth = config.customWidth ?? 300 %}
+        {% set imageHeight = config.customHeight ?? 300 %}
+    {% elseif imageDimension matches '/^[0-9]+x[0-9]+$/' %}
+        {% set imageParts = imageDimension|split('x') %}
+        {% set imageWidth = imageParts[0]|default(300) %}
+        {% set imageHeight = imageParts[1]|default(300) %}
+    {% endif %}
 
     <div class="cms-element-ict-shop-the-look">
         <div class="shop-the-look-container layout--{{ layoutStyle }}">
@@ -15,7 +25,10 @@
             <div class="shop-the-look-image-section">
                 {% block element_ict_shop_the_look_main_image %}
                 {% if not (lookImage and lookImage.mediaUrl) %}
-                    <div class="shop-the-look-main-image" style="position: relative;">
+                    <div
+                        class="shop-the-look-main-image"
+                        style="--shop-the-look-image-width: {{ imageWidth }}px; --shop-the-look-image-height: {{ imageHeight }}px; --stl-img-w: {{ imageWidth }}px; --stl-img-h: {{ imageHeight }}px;"
+                    >
                         <img
                             src="{{ asset('bundles/administration/administration/static/img/cms/preview_mountain_large.webp') }}"
                             alt="Shop The Look"
@@ -23,7 +36,10 @@
                         />
                     </div>
                 {% else %}
-                    <div class="shop-the-look-main-image" style="position: relative;">
+                    <div
+                        class="shop-the-look-main-image"
+                        style="--shop-the-look-image-width: {{ imageWidth }}px; --shop-the-look-image-height: {{ imageHeight }}px; --stl-img-w: {{ imageWidth }}px; --stl-img-h: {{ imageHeight }}px;"
+                    >
                         <img src="{{ lookImage.mediaUrl }}" alt="Shop The Look" class="main-look-image" />
                         {% block element_ict_shop_the_look_hotspots %}
                         {% if hotspots %}

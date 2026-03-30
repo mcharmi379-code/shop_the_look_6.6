@@ -142,6 +142,8 @@ final class ProductDetailPageSubscriber implements EventSubscriberInterface
         array $slots,
         string $parentId
     ): array {
+        $ids = [];
+
         foreach ($slots as $slot) {
             $hotspots = $this->extractHotspotsFromSlot($slot);
             if ($hotspots === null) {
@@ -149,11 +151,11 @@ final class ProductDetailPageSubscriber implements EventSubscriberInterface
             }
 
             if ($this->hotspotsContainProduct($hotspots, $parentId)) {
-                return $this->collectOtherProductIds($hotspots, $parentId);
+                $ids = array_merge($ids, $this->collectOtherProductIds($hotspots, $parentId));
             }
         }
 
-        return [];
+        return array_values(array_unique($ids));
     }
 
     /**
@@ -166,6 +168,8 @@ final class ProductDetailPageSubscriber implements EventSubscriberInterface
         string $productId,
         ?string $parentId
     ): array {
+        $ids = [];
+
         foreach ($slots as $slot) {
             $hotspots = $this->extractHotspotsFromSlot($slot);
             if ($hotspots === null) {
@@ -173,15 +177,18 @@ final class ProductDetailPageSubscriber implements EventSubscriberInterface
             }
 
             if ($this->hotspotsContainProduct($hotspots, $productId)) {
-                return $this->collectOtherProductIds(
-                    $hotspots,
-                    $productId,
-                    $parentId
+                $ids = array_merge(
+                    $ids,
+                    $this->collectOtherProductIds(
+                        $hotspots,
+                        $productId,
+                        $parentId
+                    )
                 );
             }
         }
 
-        return [];
+        return array_values(array_unique($ids));
     }
 
     /**

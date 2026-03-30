@@ -16,9 +16,19 @@ Shopware.Service('cmsService').registerCmsElement({
 
     defaultConfig: {
 
+        heading: {
+            source: 'static',
+            value: 'Shop the Look'
+        },
+
         sliderItems: {
             source: 'static',
             value: []
+        },
+
+        navigationCategoryId: {
+            source: 'static',
+            value: null
         },
 
         navigationArrows: {
