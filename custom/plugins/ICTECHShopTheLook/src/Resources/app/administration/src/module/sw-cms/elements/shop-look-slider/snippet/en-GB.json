@@ -11,14 +11,29 @@
                 "helpText": "Optional. When set, every selected Shop page slide opens inside this one category context.",
                 "placeholder": "Select one category for all slides..."
             },
+            "linkType": {
+                "label": "Link type",
+                "helpText": "Choose what kind of target this slide should open.",
+                "options": {
+                    "shopPage": "Shop Page",
+                    "seoUrl": "Category or Product Detail Page",
+                    "customUrl": "Custom URL"
+                }
+            },
             "shopPage": {
                 "label": "Shop page",
-                "helpText": "Optional. Select a Shop page layout for this slide. This avoids creating a separate category per look.",
+                "helpText": "Select a Shop page layout for this slide. This avoids creating a separate category per look.",
                 "placeholder": "Select a Shop page..."
             },
-            "manualLink": {
-                "label": "Manual link target",
-                "helpText": "Fallback only. Use this only when you do not want the slide to open a selected Shop page."
+            "seoUrl": {
+                "label": "Category or product detail page",
+                "helpText": "Select a storefront category or product detail URL for this slide.",
+                "placeholder": "Select a storefront path..."
+            },
+            "customUrl": {
+                "label": "Custom URL",
+                "helpText": "Enter any absolute or relative URL for this slide.",
+                "placeholder": "https://example.com/page"
             }
         },
         "block": {

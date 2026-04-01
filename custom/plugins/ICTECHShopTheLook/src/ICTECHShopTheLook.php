@@ -10,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Plugin;
+use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 
 /**
@@ -20,6 +21,12 @@ use Shopware\Core\Framework\Plugin\Context\UninstallContext;
  */
 final class ICTECHShopTheLook extends Plugin
 {
+    public function activate(ActivateContext $activateContext): void
+    {
+        parent::activate($activateContext);
+        $this->resetSlotConfigs($activateContext->getContext());
+    }
+
     public function uninstall(UninstallContext $uninstallContext): void
     {
         parent::uninstall($uninstallContext);
@@ -51,6 +58,34 @@ final class ICTECHShopTheLook extends Plugin
             $context,
             true
         );
+    }
+
+    private function resetSlotConfigs(Context $context): void
+    {
+        $container = $this->container;
+        if ($container === null) {
+            return;
+        }
+
+        $repository = $container->get('cms_slot.repository');
+        if (!$repository instanceof EntityRepository) {
+            return;
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('type', ['ict-shop-the-look', 'ict-shop-look-slider']));
+
+        $ids = $repository->searchIds($criteria, $context)->getIds();
+        if ($ids === []) {
+            return;
+        }
+
+        $payload = array_map(
+            static fn (string $id): array => ['id' => $id, 'config' => []],
+            $ids
+        );
+
+        $repository->update($payload, $context);
     }
 
     /**

@@ -84,6 +84,14 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
                 { value: 'outside', label: this.$t('sw-cms.elements.imageSlider.config.label.navigationPositionOutside') },
             ];
         },
+
+        linkTypeOptions() {
+            return [
+                { value: 'shopPage', label: this.$t('ict-shop-look-slider.config.linkType.options.shopPage') },
+                { value: 'seoUrl', label: this.$t('ict-shop-look-slider.config.linkType.options.seoUrl') },
+                { value: 'customUrl', label: this.$t('ict-shop-look-slider.config.linkType.options.customUrl') },
+            ];
+        },
     },
 
     created() {
@@ -100,11 +108,13 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
 
     methods: {
         async initSliderItems() {
+            this.normalizeSliderItems();
+
             if (this.element.config.sliderItems.value.length > 0) {
                 const mediaIds = this.element.config.sliderItems.value.map(item => item.mediaId);
                 const criteria = new Criteria(1, 25);
                 criteria.setIds(mediaIds);
-                const searchResult = await this.mediaRepository.search(criteria);
+                const searchResult = await this.mediaRepository.search(criteria, Shopware.Context.api);
                 this.mediaItems = mediaIds.map(id => searchResult.get(id)).filter(item => item !== null);
             }
         },
@@ -122,7 +132,10 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
             sliderItems.value.push({
                 mediaUrl: resolvedMediaItem.url,
                 mediaId: resolvedMediaItem.id,
+                linkType: 'shopPage',
                 cmsPageId: null,
+                seoUrl: null,
+                customUrl: null,
                 url: null,
                 newTab: false,
             });
@@ -134,7 +147,7 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
 
         async getMediaItem(mediaItem) {
             if (mediaItem && mediaItem.targetId) {
-                return this.mediaRepository.get(mediaItem.targetId);
+                return this.mediaRepository.get(mediaItem.targetId, Shopware.Context.api);
             }
 
             return mediaItem;
@@ -164,7 +177,10 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
                 sliderItems.value.push({
                     mediaUrl: item.url,
                     mediaId: item.id,
+                    linkType: 'shopPage',
                     cmsPageId: null,
+                    seoUrl: null,
+                    customUrl: null,
                     url: null,
                     newTab: false,
                 });
@@ -204,6 +220,11 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
             this.$emit('element-update', this.element);
         },
 
+        onBooleanFieldChange(configKey, value) {
+            this.element.config[configKey].value = value;
+            this.emitUpdateEl();
+        },
+
         async loadSeoUrls() {
             const domainCriteria = new Criteria(1, 25);
             domainCriteria.addFilter(Criteria.contains('url', 'http'));
@@ -229,24 +250,136 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
             }, []);
         },
 
+        normalizeSliderItems() {
+            if (!Array.isArray(this.element.config.sliderItems.value)) {
+                return;
+            }
+
+            this.element.config.sliderItems.value = this.element.config.sliderItems.value.map((item) => {
+                const normalizedItem = {
+                    linkType: 'shopPage',
+                    cmsPageId: null,
+                    seoUrl: null,
+                    customUrl: null,
+                    url: null,
+                    newTab: false,
+                    ...item,
+                };
+
+                if (!normalizedItem.linkType) {
+                    if (normalizedItem.cmsPageId) {
+                        normalizedItem.linkType = 'shopPage';
+                    } else if (normalizedItem.url) {
+                        normalizedItem.linkType = 'seoUrl';
+                        normalizedItem.seoUrl = normalizedItem.url;
+                    } else {
+                        normalizedItem.linkType = 'shopPage';
+                    }
+                }
+
+                if (!normalizedItem.seoUrl && normalizedItem.linkType === 'seoUrl' && normalizedItem.url) {
+                    normalizedItem.seoUrl = normalizedItem.url;
+                }
+
+                if (!normalizedItem.customUrl && normalizedItem.linkType === 'customUrl' && normalizedItem.url) {
+                    normalizedItem.customUrl = normalizedItem.url;
+                }
+
+                if (normalizedItem.linkType === 'customUrl' && normalizedItem.customUrl) {
+                    normalizedItem.customUrl = this.normalizeCustomUrl(normalizedItem.customUrl);
+                    normalizedItem.url = normalizedItem.customUrl;
+                }
+
+                return normalizedItem;
+            });
+
+            this.updateMediaDataValue();
+            this.emitUpdateEl();
+        },
+
+        onLinkTypeChange(index, value) {
+            const item = this.element.config.sliderItems.value[index];
+            item.linkType = value;
+
+            if (value !== 'shopPage') {
+                item.cmsPageId = null;
+            }
+
+            if (value !== 'seoUrl') {
+                item.seoUrl = null;
+            }
+
+            if (value !== 'customUrl') {
+                item.customUrl = null;
+            }
+
+            item.url = this.getResolvedUrl(item);
+            this.updateMediaDataValue();
+            this.emitUpdateEl();
+        },
+
         onCmsPageChange(index, value) {
-            this.element.config.sliderItems.value[index].cmsPageId = value || null;
+            const item = this.element.config.sliderItems.value[index];
+            item.cmsPageId = value || null;
+            if (value) {
+                item.linkType = 'shopPage';
+            }
+            item.url = this.getResolvedUrl(item);
             this.updateMediaDataValue();
             this.emitUpdateEl();
         },
 
         onUrlChange(index, value) {
-            this.element.config.sliderItems.value[index].url = value || null;
+            const item = this.element.config.sliderItems.value[index];
+            item.seoUrl = value || null;
+            item.linkType = 'seoUrl';
+            item.url = this.getResolvedUrl(item);
             this.updateMediaDataValue();
             this.emitUpdateEl();
         },
 
-        onChangeAutoSlide(value) {
-            if (!value) {
-                this.element.config.autoplayTimeout.value = this.autoplayTimeoutDefault;
-                this.element.config.speed.value = this.speedDefault;
-            }
+        onCustomUrlChange(index, value) {
+            const item = this.element.config.sliderItems.value[index];
+            item.customUrl = this.normalizeCustomUrl(value);
+            item.linkType = 'customUrl';
+            item.url = this.getResolvedUrl(item);
+            this.updateMediaDataValue();
             this.emitUpdateEl();
+        },
+
+        getResolvedUrl(item) {
+            if (item.linkType === 'seoUrl') {
+                return item.seoUrl || null;
+            }
+
+            if (item.linkType === 'customUrl') {
+                return this.normalizeCustomUrl(item.customUrl);
+            }
+
+            return null;
+        },
+
+        normalizeCustomUrl(value) {
+            if (typeof value !== 'string') {
+                return null;
+            }
+
+            const normalizedValue = value.trim();
+
+            if (!normalizedValue) {
+                return null;
+            }
+
+            // Keep explicit schemes and true relative URLs unchanged.
+            if (
+                /^(?:[a-z][a-z\d+\-.]*:)?\/\//i.test(normalizedValue)
+                || /^[a-z][a-z\d+\-.]*:/i.test(normalizedValue)
+                || /^[/?#]/.test(normalizedValue)
+            ) {
+                return normalizedValue;
+            }
+
+            return `https://${normalizedValue}`;
         },
     },
 });

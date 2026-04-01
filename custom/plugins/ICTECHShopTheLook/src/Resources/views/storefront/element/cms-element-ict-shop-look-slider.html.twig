@@ -25,10 +25,19 @@
                     {% block element_ict_shop_look_slider_item %}
                     <div class="ict-slide">
                         {% set slideUrl = null %}
-                        {% if item.cmsPageId and navigationCategoryId %}
+                        {% set linkType = item.linkType ?? null %}
+                        {% if linkType == 'shopPage' and item.cmsPageId and navigationCategoryId %}
+                            {% set slideUrl = path('frontend.ict.shop.look.page', { navigationId: navigationCategoryId, cmsPageId: item.cmsPageId }) %}
+                        {% elseif linkType == 'shopPage' and item.cmsPageId %}
+                            {% set slideUrl = path('frontend.ict.shop.look.page.fallback', { cmsPageId: item.cmsPageId }) %}
+                        {% elseif linkType == 'seoUrl' and (item.seoUrl ?? item.url) %}
+                            {% set slideUrl = item.seoUrl ?? item.url %}
+                        {% elseif linkType == 'customUrl' and (item.customUrl ?? item.url) %}
+                            {% set slideUrl = item.customUrl ?? item.url %}
+                        {% elseif item.cmsPageId and navigationCategoryId %}
                             {% set slideUrl = path('frontend.ict.shop.look.page', { navigationId: navigationCategoryId, cmsPageId: item.cmsPageId }) %}
                         {% elseif item.cmsPageId %}
-                            {% set slideUrl = path('frontend.cms.page.full', { id: item.cmsPageId }) %}
+                            {% set slideUrl = path('frontend.ict.shop.look.page.fallback', { cmsPageId: item.cmsPageId }) %}
                         {% elseif item.url %}
                             {% set slideUrl = item.url %}
                         {% endif %}

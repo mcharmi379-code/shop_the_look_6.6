@@ -11,30 +11,30 @@
 
             <div v-show="active === 'content'">
 
-                <mt-select
+                <sw-single-select
                     v-model="element.config.imageDimension.value"
                     :label="$tc('ict-shop-the-look.config.label.imageDimension')"
                     help-text="Choose a preset size for the look image, or select &quot;Custom&quot; to enter exact pixel dimensions."
                     :options="imageDimensionOptions"
-                    @update:model-value="$emit('element-update', element)"
+                    @update:value="$emit('element-update', element)"
                 />
 
                 <div v-if="element.config.imageDimension.value === 'custom'" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                    <mt-number-field
+                    <sw-number-field
                         v-model="element.config.customWidth.value"
                         :label="$tc('ict-shop-the-look.config.label.customWidth')"
                         help-text="Enter the desired width of the look image in pixels (50–2000)."
                         :min="50"
                         :max="2000"
-                        @update:model-value="$emit('element-update', element)"
+                        @update:value="$emit('element-update', element)"
                     />
-                    <mt-number-field
+                    <sw-number-field
                         v-model="element.config.customHeight.value"
                         :label="$tc('ict-shop-the-look.config.label.customHeight')"
                         help-text="Enter the desired height of the look image in pixels (50–2000)."
                         :min="50"
                         :max="2000"
-                        @update:model-value="$emit('element-update', element)"
+                        @update:value="$emit('element-update', element)"
                     />
                 </div>
 
@@ -94,35 +94,34 @@
                             <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 15px; align-items: start;">
 
                                 <div>
-                                    <mt-number-field
+                                    <sw-number-field
                                         v-model="hotspot.xPosition"
                                         :label="$tc('ict-shop-the-look.config.label.xPosition')"
                                         help-text="Horizontal position of the dot: 0% = left edge, 100% = right edge."
                                         :min="0"
                                         :max="100"
-                                        @update:model-value="onHotspotChange(index)"
+                                        @update:value="onHotspotChange(index)"
                                     />
-                                    <mt-number-field
+                                    <sw-number-field
                                         v-model="hotspot.yPosition"
                                         :label="$tc('ict-shop-the-look.config.label.yPosition')"
                                         help-text="Vertical position of the dot: 0% = top edge, 100% = bottom edge."
                                         :min="0"
                                         :max="100"
-                                        @update:model-value="onHotspotChange(index)"
+                                        @update:value="onHotspotChange(index)"
                                         style="margin-top: 10px;"
                                     />
                                 </div>
 
                                 <div>
                                     <sw-entity-single-select
-                                        v-model:value="hotspot.productId"
+                                        :value="hotspot.productId"
                                         :label="$tc('ict-shop-the-look.config.label.selectProduct')"
                                         help-text="Choose the product that this hotspot dot represents."
                                         entity="product"
                                         :criteria="productCriteria"
                                         :context="productContext"
-                                        show-clearable-button
-                                        @update:value="onHotspotProductChange(index)"
+                                        @update:value="hotspot.productId = $event; onHotspotProductChange(index)"
                                     />
                                 </div>
 
@@ -177,44 +176,40 @@
             <div v-show="active === 'settings'">
 
 
-                <mt-select
+                <sw-single-select
                     v-model="element.config.layoutStyle.value"
                     :label="$tc('ict-shop-the-look.config.label.layoutStyle')"
                     help-text="Controls how the image and product list are arranged on the storefront."
                     :options="layoutOptions"
-                    @update:model-value="$emit('element-update', element)"
+                    @update:value="$emit('element-update', element)"
                 />
 
-                <mt-switch
-                    :checked="element.config.showPrices.value"
+                <sw-switch-field
+                    :value="element.config.showPrices.value"
                     :label="$tc('ict-shop-the-look.config.label.showPrices')"
                     help-text="When enabled, the product price is displayed next to each product."
-                    bordered
-                    @change="element.config.showPrices.value = $event; onElementUpdate()"
+                    @update:value="element.config.showPrices.value = $event; onElementUpdate()"
                 />
 
-                <mt-switch
-                    :checked="element.config.showVariantSwitch.value"
+                <sw-switch-field
+                    :value="element.config.showVariantSwitch.value"
                     :label="$tc('ict-shop-the-look.config.label.showVariantSwitch')"
                     help-text="When enabled, variant selectors (size, colour, etc.) are shown for each product."
-                    bordered
-                    @change="element.config.showVariantSwitch.value = $event; onElementUpdate()"
+                    @update:value="element.config.showVariantSwitch.value = $event; onElementUpdate()"
                 />
 
-                <mt-switch
-                    :checked="element.config.addAllToCart.value"
+                <sw-switch-field
+                    :value="element.config.addAllToCart.value"
                     :label="$tc('ict-shop-the-look.config.label.addAllToCart')"
                     help-text="Shows an &quot;Add All to Cart&quot; button that adds every listed product at once."
-                    bordered
-                    @change="element.config.addAllToCart.value = $event; onElementUpdate()"
+                    @update:value="element.config.addAllToCart.value = $event; onElementUpdate()"
                 />
 
-                <mt-switch
-                    :checked="element.config.addSingleProduct.value"
+                <sw-switch-field
+                    :value="element.config.addSingleProduct.value"
                     :label="$tc('ict-shop-the-look.config.label.addSingleProduct')"
                     help-text="Shows an individual &quot;Add to Cart&quot; button on each product card."
-                    bordered
-                    @change="element.config.addSingleProduct.value = $event; onElementUpdate()"
+                    @update:value="element.config.addSingleProduct.value = $event; onElementUpdate()"
                 />
 
             </div>

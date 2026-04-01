@@ -11,14 +11,29 @@
                 "helpText": "Optional. Wenn gesetzt, werden alle ausgewaehlten Shop-Seiten innerhalb dieser einen Kategoriekontext geoeffnet.",
                 "placeholder": "Eine Kategorie fuer alle Slides auswaehlen..."
             },
+            "linkType": {
+                "label": "Link-Typ",
+                "helpText": "Waehlen Sie aus, welche Art von Ziel dieser Slide oeffnen soll.",
+                "options": {
+                    "shopPage": "Shop-Seite",
+                    "seoUrl": "Kategorie- oder Produktdetailseite",
+                    "customUrl": "Benutzerdefinierte URL"
+                }
+            },
             "shopPage": {
                 "label": "Shop-Seite",
-                "helpText": "Optional. Waehlen Sie fuer diesen Slide eine Shop-Seite aus. So ist keine eigene Kategorie pro Look noetig.",
+                "helpText": "Waehlen Sie fuer diesen Slide eine Shop-Seite aus. So ist keine eigene Kategorie pro Look noetig.",
                 "placeholder": "Eine Shop-Seite auswaehlen..."
             },
-            "manualLink": {
-                "label": "Manuelles Linkziel",
-                "helpText": "Nur als Fallback. Verwenden Sie dies nur, wenn der Slide nicht auf eine ausgewaehlte Shop-Seite zeigen soll."
+            "seoUrl": {
+                "label": "Kategorie- oder Produktdetailseite",
+                "helpText": "Waehlen Sie fuer diesen Slide eine Storefront-Kategorie- oder Produktdetail-URL aus.",
+                "placeholder": "Einen Storefront-Pfad auswaehlen..."
+            },
+            "customUrl": {
+                "label": "Benutzerdefinierte URL",
+                "helpText": "Geben Sie fuer diesen Slide eine absolute oder relative URL ein.",
+                "placeholder": "https://example.com/seite"
             }
         },
         "block": {
