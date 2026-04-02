@@ -96,6 +96,7 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
 
     created() {
         this.initElementConfig('ict-shop-look-slider');
+        this.initializeConfigValues();
         this.initSliderItems();
         this.loadSeoUrls();
     },
@@ -107,6 +108,47 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
     },
 
     methods: {
+        initializeConfigValues() {
+            this.ensureConfigField('speed', this.speedDefault);
+            this.ensureConfigField('autoSlide', false);
+            this.ensureConfigField(
+                'autoplayTimeout',
+                this.element?.config?.delay?.value ?? this.autoplayTimeoutDefault
+            );
+
+            // Keep the legacy `delay` field aligned so older saved CMS elements
+            // and storefront fallbacks continue to work after editing.
+            this.ensureConfigField('delay', this.element.config.autoplayTimeout.value);
+            this.syncAutoplayTimeout(this.element.config.autoplayTimeout.value);
+        },
+
+        ensureConfigField(configKey, defaultValue) {
+            if (!this.element.config[configKey]) {
+                this.element.config[configKey] = {
+                    source: 'static',
+                    value: defaultValue,
+                };
+
+                return;
+            }
+
+            if (this.element.config[configKey].value === undefined || this.element.config[configKey].value === null) {
+                this.element.config[configKey].value = defaultValue;
+            }
+        },
+
+        syncAutoplayTimeout(value) {
+            const normalizedValue = Number.isFinite(Number(value))
+                ? parseInt(value, 10)
+                : this.autoplayTimeoutDefault;
+
+            this.element.config.autoplayTimeout.value = normalizedValue;
+
+            if (this.element.config.delay) {
+                this.element.config.delay.value = normalizedValue;
+            }
+        },
+
         async initSliderItems() {
             this.normalizeSliderItems();
 
@@ -222,6 +264,11 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
 
         onBooleanFieldChange(configKey, value) {
             this.element.config[configKey].value = value;
+            this.emitUpdateEl();
+        },
+
+        onAutoplayTimeoutChange(value) {
+            this.syncAutoplayTimeout(value);
             this.emitUpdateEl();
         },
 

@@ -5,7 +5,7 @@
     navigationDots: element.config.navigationDots.value,
     speed: element.config.speed.value,
     autoSlide: element.config.autoSlide.value,
-    autoplayTimeout: element.config.autoplayTimeout.value
+    autoplayTimeout: element.config.autoplayTimeout.value ?? element.config.delay.value ?? 5000
 } %}
 
 {% set sliderItems = element.data.sliderItems ?? [] %}

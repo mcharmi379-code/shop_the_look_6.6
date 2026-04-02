@@ -81,13 +81,13 @@
                 />
 
                 <sw-number-field
-                    v-model="element.config.autoplayTimeout.value"
+                    :value="element.config.autoplayTimeout.value"
                     :label="$t('sw-cms.elements.general.config.label.autoplayTimeout')"
                     help-text="Time in milliseconds each slide is shown before advancing automatically (requires Auto Slide to be enabled)."
                     number-type="int"
                     :min="0"
                     :max="3600000"
-                    @update:value="emitUpdateEl"
+                    @update:value="onAutoplayTimeoutChange"
                 />
 
                 <div

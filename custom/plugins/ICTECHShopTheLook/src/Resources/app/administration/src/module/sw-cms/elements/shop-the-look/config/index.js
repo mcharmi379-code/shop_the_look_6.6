@@ -2,6 +2,7 @@ import template from './sw-cms-el-config-ict-shop-the-look.html.twig';
 
 const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
+const { object: { cloneDeep } } = Shopware.Utils;
 
 Component.register('sw-cms-el-config-ict-shop-the-look', {
     template,
@@ -109,23 +110,55 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
         },
 
         lookImageData() {
-            // config.lookImage.value stores { mediaId, mediaUrl } — persists to DB
             const val = ((this.element && this.element.config) || {}).lookImage?.value;
-            if (val && typeof val === 'object' && val.mediaUrl) {
-                return val;
+
+            if (!val || typeof val !== 'object') {
+                return null;
             }
+
+            if (val.mediaUrl) {
+                return {
+                    mediaId: val.mediaId || val.id || null,
+                    mediaUrl: val.mediaUrl,
+                };
+            }
+
+            if (val.url) {
+                return {
+                    mediaId: val.mediaId || val.id || null,
+                    mediaUrl: val.url,
+                };
+            }
+
             return null;
         },
     },
 
     created() {
         this.initElementConfig('ict-shop-the-look');
+        this.ensureDimensionDefaults();
         this.ensureBooleanDefaults();
         this.loadHotspots();
         this.loadLookImage();
     },
 
     methods: {
+        ensureDimensionDefaults() {
+            const config = (this.element && this.element.config) || {};
+
+            if (config.imageDimension && !config.imageDimension.value) {
+                config.imageDimension.value = '300x300';
+            }
+
+            if (config.customWidth && !config.customWidth.value) {
+                config.customWidth.value = 300;
+            }
+
+            if (config.customHeight && !config.customHeight.value) {
+                config.customHeight.value = 300;
+            }
+        },
+
         ensureBooleanDefaults() {
             const config = (this.element && this.element.config) || {};
             ['showPrices', 'showVariantSwitch', 'addAllToCart', 'addSingleProduct'].forEach(key => {
@@ -154,6 +187,23 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
             this.$emit('element-update', this.element);
         },
 
+        onImageDimensionChange(value) {
+            this.element.config.imageDimension.value = value || '300x300';
+            this.onElementUpdate();
+        },
+
+        onCustomDimensionChange(configKey, value) {
+            const normalizedValue = this.normalizeDimensionValue(value);
+            this.element.config[configKey].value = normalizedValue;
+            this.onElementUpdate();
+        },
+
+        onLayoutStyleChange(value) {
+            this.element.config.layoutStyle.value = value || 'image-products';
+            this.showError = false;
+            this.onElementUpdate();
+        },
+
         cleanupDimensionConfig() {
             const element = this.element || {};
             const config = element.config || {};
@@ -174,21 +224,35 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
             const element = this.element || {};
             const config = element.config || {};
             const hotspots = config.hotspots || {};
-            this.hotspots = hotspots.value || [];
+            const hotspotValues = Array.isArray(hotspots.value) ? hotspots.value : [];
+
+            this.hotspots = hotspotValues.map((hotspot) => ({
+                id: hotspot.id || this.generateId(),
+                xPosition: this.normalizePosition(hotspot.xPosition),
+                yPosition: this.normalizePosition(hotspot.yPosition),
+                productId: hotspot.productId || null,
+                productName: hotspot.productName || null,
+                productCoverUrl: hotspot.productCoverUrl || null,
+            }));
         },
 
         addHotspot() {
-            this.hotspots.push({
+            this.hotspots = [
+                ...this.hotspots,
+                {
                 id: this.generateId(),
                 xPosition: 50,
                 yPosition: 50,
                 productId: null,
-            });
+                productName: null,
+                productCoverUrl: null,
+                },
+            ];
             this.saveHotspots();
         },
 
         removeHotspot(index) {
-            this.hotspots.splice(index, 1);
+            this.hotspots = this.hotspots.filter((_, hotspotIndex) => hotspotIndex !== index);
             this.saveHotspots();
         },
 
@@ -214,13 +278,47 @@ Component.register('sw-cms-el-config-ict-shop-the-look', {
             this.saveHotspots();
         },
 
-        onHotspotChange() {
+        onHotspotPositionChange(index, positionKey, value) {
+            const hotspot = this.hotspots[index];
+
+            if (!hotspot) {
+                return;
+            }
+
+            hotspot[positionKey] = this.normalizePosition(value);
             this.saveHotspots();
         },
 
         saveHotspots() {
-            this.element.config.hotspots.value = this.hotspots;
+            const normalizedHotspots = this.hotspots.map((hotspot) => ({
+                ...hotspot,
+                xPosition: this.normalizePosition(hotspot.xPosition),
+                yPosition: this.normalizePosition(hotspot.yPosition),
+            }));
+
+            this.hotspots = normalizedHotspots;
+            this.element.config.hotspots.value = cloneDeep(normalizedHotspots);
             this.onElementUpdate();
+        },
+
+        normalizeDimensionValue(value) {
+            const numericValue = Number.parseInt(value, 10);
+
+            if (!Number.isFinite(numericValue)) {
+                return 300;
+            }
+
+            return Math.min(2000, Math.max(50, numericValue));
+        },
+
+        normalizePosition(value) {
+            const numericValue = Number.parseFloat(value);
+
+            if (!Number.isFinite(numericValue)) {
+                return 50;
+            }
+
+            return Math.min(100, Math.max(0, numericValue));
         },
 
         generateId() {

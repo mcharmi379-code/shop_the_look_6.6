@@ -12,29 +12,29 @@
             <div v-show="active === 'content'">
 
                 <sw-single-select
-                    v-model="element.config.imageDimension.value"
+                    :value="element.config.imageDimension.value"
                     :label="$tc('ict-shop-the-look.config.label.imageDimension')"
                     help-text="Choose a preset size for the look image, or select &quot;Custom&quot; to enter exact pixel dimensions."
                     :options="imageDimensionOptions"
-                    @update:value="$emit('element-update', element)"
+                    @update:value="onImageDimensionChange"
                 />
 
                 <div v-if="element.config.imageDimension.value === 'custom'" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                     <sw-number-field
-                        v-model="element.config.customWidth.value"
+                        :value="element.config.customWidth.value"
                         :label="$tc('ict-shop-the-look.config.label.customWidth')"
                         help-text="Enter the desired width of the look image in pixels (50–2000)."
                         :min="50"
                         :max="2000"
-                        @update:value="$emit('element-update', element)"
+                        @update:value="onCustomDimensionChange('customWidth', $event)"
                     />
                     <sw-number-field
-                        v-model="element.config.customHeight.value"
+                        :value="element.config.customHeight.value"
                         :label="$tc('ict-shop-the-look.config.label.customHeight')"
                         help-text="Enter the desired height of the look image in pixels (50–2000)."
                         :min="50"
                         :max="2000"
-                        @update:value="$emit('element-update', element)"
+                        @update:value="onCustomDimensionChange('customHeight', $event)"
                     />
                 </div>
 
@@ -95,20 +95,20 @@
 
                                 <div>
                                     <sw-number-field
-                                        v-model="hotspot.xPosition"
+                                        :value="hotspot.xPosition"
                                         :label="$tc('ict-shop-the-look.config.label.xPosition')"
                                         help-text="Horizontal position of the dot: 0% = left edge, 100% = right edge."
                                         :min="0"
                                         :max="100"
-                                        @update:value="onHotspotChange(index)"
+                                        @update:value="onHotspotPositionChange(index, 'xPosition', $event)"
                                     />
                                     <sw-number-field
-                                        v-model="hotspot.yPosition"
+                                        :value="hotspot.yPosition"
                                         :label="$tc('ict-shop-the-look.config.label.yPosition')"
                                         help-text="Vertical position of the dot: 0% = top edge, 100% = bottom edge."
                                         :min="0"
                                         :max="100"
-                                        @update:value="onHotspotChange(index)"
+                                        @update:value="onHotspotPositionChange(index, 'yPosition', $event)"
                                         style="margin-top: 10px;"
                                     />
                                 </div>
@@ -177,11 +177,11 @@
 
 
                 <sw-single-select
-                    v-model="element.config.layoutStyle.value"
+                    :value="element.config.layoutStyle.value"
                     :label="$tc('ict-shop-the-look.config.label.layoutStyle')"
                     help-text="Controls how the image and product list are arranged on the storefront."
                     :options="layoutOptions"
-                    @update:value="$emit('element-update', element)"
+                    @update:value="onLayoutStyleChange"
                 />
 
                 <sw-switch-field

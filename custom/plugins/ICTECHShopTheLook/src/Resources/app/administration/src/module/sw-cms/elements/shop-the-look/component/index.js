@@ -17,12 +17,13 @@ Component.register('sw-cms-el-ict-shop-the-look', {
     computed: {
         lookImageUrl() {
             const element = this.element || {};
-            // config.lookImage.value stores { mediaId, mediaUrl } — persists to DB
             const val = (element.config || {}).lookImage?.value;
-            if (val && typeof val === 'object' && val.mediaUrl) {
-                return val.mediaUrl;
+
+            if (!val || typeof val !== 'object') {
+                return null;
             }
-            return null;
+
+            return val.mediaUrl || val.url || null;
         },
         hotspots() {
             const element = this.element || {};

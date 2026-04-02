@@ -95,7 +95,6 @@
     position: relative;
     justify-content: center;
     display: flex;
-    container-type: inline-size;
 
     .shop-the-look-main-image {
         position: relative;
@@ -115,6 +114,8 @@
     height: auto;
     max-width: min(100%, var(--shop-the-look-image-width, 300px));
     max-height: var(--shop-the-look-image-height, 300px);
+    object-fit: contain;
+    object-position: center center;
     border-radius: 8px;
     display: block;
 }
