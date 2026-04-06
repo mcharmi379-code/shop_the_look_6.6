@@ -41,36 +41,36 @@
 
             <div v-if="active === 'settings'">
                 <sw-text-field
-                    v-model="element.config.heading.value"
+                    :value="element.config.heading.value"
                     :label="$t('ict-shop-look-slider.config.heading.label')"
                     :help-text="$t('ict-shop-look-slider.config.heading.helpText')"
-                    @update:value="emitUpdateEl"
+                    @update:value="element.config.heading.value = $event; emitUpdateEl()"
                 />
 
                 <sw-single-select
-                    v-model="element.config.navigationArrows.value"
+                    :value="element.config.navigationArrows.value"
                     :label="$t('sw-cms.elements.imageSlider.config.label.navigationArrows')"
                     help-text="Choose where the previous/next arrows appear: inside the slider, outside, or hidden."
                     :options="navigationArrowsValueOptions"
-                    @update:value="emitUpdateEl"
+                    @update:value="element.config.navigationArrows.value = $event; emitUpdateEl()"
                 />
 
                 <sw-single-select
-                    v-model="element.config.navigationDots.value"
+                    :value="element.config.navigationDots.value"
                     :label="$t('sw-cms.elements.imageSlider.config.label.navigationDots')"
                     help-text="Choose where the dot indicators appear: inside the slider, outside, or hidden."
                     :options="navigationDotsValueOptions"
-                    @update:value="emitUpdateEl"
+                    @update:value="element.config.navigationDots.value = $event; emitUpdateEl()"
                 />
 
                 <sw-number-field
-                    v-model="element.config.speed.value"
+                    :value="element.config.speed.value"
                     :label="$t('sw-cms.elements.general.config.label.speed')"
                     help-text="Transition speed between slides in milliseconds (e.g. 300 = 0.3 seconds)."
                     number-type="int"
                     :min="0"
                     :max="3600000"
-                    @update:value="emitUpdateEl"
+                    @update:value="element.config.speed.value = $event; emitUpdateEl()"
                 />
 
                 <sw-switch-field

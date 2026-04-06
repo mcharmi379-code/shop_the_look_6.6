@@ -22,6 +22,7 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
             mediaItems: [],
             seoUrlOptions: [],
             isMounted: false,
+            _processingIds: new Set(),
         };
     },
 
@@ -162,13 +163,25 @@ Component.register('sw-cms-el-config-ict-shop-look-slider', {
         },
 
         async onImageUpload(mediaItem) {
+            const targetId = mediaItem?.targetId || mediaItem?.id;
+            if (!targetId) return;
+
+            if (this._processingIds.has(targetId)) return;
+            this._processingIds.add(targetId);
+
             const resolvedMediaItem = await this.getMediaItem(mediaItem);
+            this._processingIds.delete(targetId);
+
             if (!resolvedMediaItem) return;
 
             const sliderItems = this.element.config.sliderItems;
             if (sliderItems.source === 'default') {
                 sliderItems.value = [];
                 sliderItems.source = 'static';
+            }
+
+            if (sliderItems.value.some(item => item.mediaId === resolvedMediaItem.id)) {
+                return;
             }
 
             sliderItems.value.push({

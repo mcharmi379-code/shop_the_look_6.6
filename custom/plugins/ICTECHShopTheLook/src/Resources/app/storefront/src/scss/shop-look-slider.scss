@@ -1,13 +1,13 @@
 .ict-shop-look-slider {
     padding: 20px 0;
     position: relative;
-    overflow: hidden;
 
     .ict-shop-look-slider-heading {
         margin: 0 0 20px;
         text-align: center;
     }
 
+    // Outside: add padding so arrows sit in the padded gutter, not over slides
     &.arrows--outside {
         padding-left: 60px;
         padding-right: 60px;
@@ -21,6 +21,11 @@
 
 .cms-block-ict-shop-look-slider-block {
     padding: 0;
+}
+
+.ict-slider-track {
+    overflow: hidden;
+    position: relative;
 }
 
 .ict-slider-container {
@@ -110,17 +115,36 @@
     }
 }
 
-.ict-slider-prev {
+// Outside: arrows sit in the padded gutter area, fully visible outside the track
+.arrows--outside .ict-slider-prev {
     left: 8px;
 }
 
-.ict-slider-next {
+.arrows--outside .ict-slider-next {
     right: 8px;
+}
+
+// Inside: arrows overlay the slide track
+.arrows--inside .ict-slider-prev {
+    left: 12px;
+}
+
+.arrows--inside .ict-slider-next {
+    right: 12px;
 }
 
 .ict-slider-dots {
     text-align: center;
     margin-top: 16px;
+}
+
+// Inside: dots overlay the bottom of the slide track
+.dots--inside .ict-slider-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin-top: 0;
 }
 
 .ict-slider-dot {
